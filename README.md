@@ -23,7 +23,7 @@ Connect the repository `garrison2025/howlong` to a **Pages** project using the C
 |---|---|
 | Production branch | `main` |
 | Framework preset | None |
-| Build command | `npm run build` |
+| Build command | `npm test` (builds and verifies all pages before publishing) |
 | Build output directory | `dist` |
 | Root directory | Repository root |
 | Node version | `22` or newer |

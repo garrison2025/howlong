@@ -116,7 +116,7 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       let epoch:number,adjusted:boolean,passed=false,targetDate:CivilDate;
       if(isHoliday){const result=holidayTarget(now,page.holiday!,zone);epoch=result.epoch;adjusted=result.adjusted;targetDate=result.date;}
       else{
-        if(key!==cachedKey||!cached||(day==='next'&&cached.epoch<now)){cached=nextClock(now,hour,minute,zone,day);cachedKey=key;}
+        if(key!==cachedKey||!cached||(cached.epoch<now&&!cached.passed)){cached=nextClock(now,hour,minute,zone,day);cachedKey=key;}
         epoch=cached.epoch;adjusted=cached.adjusted;passed=cached.passed;targetDate=cached.date;
       }
       previousTarget=epoch;
@@ -138,13 +138,22 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       el('result-summary').textContent=summary;
       tableRows('countdown-units', [['Hours',formatNumber(Math.max(0,epoch-now)/3600000)],['Minutes',formatNumber(Math.max(0,epoch-now)/60000)],['Seconds',formatNumber(Math.max(0,epoch-now)/1000)]]);
       if(page.type==='ambiguous'){
-        const base=(page.hour??3)%12,am=nextClock(now,base,page.minute??0,zone,day),pm=nextClock(now,base+12,page.minute??0,zone,day);
-        for(const [id,result]of [['am-result',am],['pm-result',pm]]as const){const d=durationParts(result.epoch-now);el(id).textContent=result.passed?'Today’s time has passed':`${d.days*24+d.hours}h ${d.minutes}m ${d.seconds}s`;}
+        const base=hour%12,am=nextClock(now,base,minute,zone,day),pm=nextClock(now,base+12,minute,zone,day);
+        for(const [id,result,period]of [['am-result',am,'AM'],['pm-result',pm,'PM']]as const){const d=durationParts(result.epoch-now);el(id).textContent=result.passed?'Today’s time has passed':`${d.days*24+d.hours}h ${d.minutes}m ${d.seconds}s`;const label=el(id).previousElementSibling;if(label)label.textContent=`${base||12}:${String(minute).padStart(2,'0')} ${period}`;}
       }
       const hand=document.getElementById('clock-hand');if(hand)hand.style.transform=`rotate(${(parts.hour%12)*30+parts.minute/2}deg)`;
       const minuteHand=document.querySelector<HTMLElement>('.dial-minute');if(minuteHand)minuteHand.style.transform=`rotate(${parts.minute*6}deg)`;
       const mini=document.getElementById('home-live-count');if(mini)mini.textContent=`${hours}h ${left.minutes}m ${left.seconds}s until ${targetLabel}`;
-    }catch(error){message(error instanceof Error?error.message:'Check your countdown settings.',true);}
+    }catch(error){
+      previousTarget=null;cached=null;
+      for(const id of ['count-days','count-hours','count-minutes','count-seconds'])el(id).textContent='—';
+      el('countdown-note').textContent='No countdown: check your settings.';
+      el('result-summary').textContent='No result: check your countdown settings.';
+      el('target-date').textContent='Choose valid settings';
+      tableRows('countdown-units',[]);
+      for(const id of ['am-result','pm-result','home-live-count']){const result=document.getElementById(id);if(result)result.textContent='—';}
+      message(error instanceof Error?error.message:'Check your countdown settings.',true);
+    }
   }
   function changed():void{cached=null;previousTarget=null;alertedTarget=null;message('');tick();}
   ['target-time','time-zone','target-day','clock-format'].forEach(id=>el(id).addEventListener('change',()=>{if(id==='clock-format')store('howlong-clock-format',select(id).value);changed();}));
