@@ -56,7 +56,7 @@ function searchTools(): void {
   const matches=searchIndex.filter(p=>(p.label+' '+p.terms).toLowerCase().includes(term)).slice(0,12);
   const list=el('search-results');list.replaceChildren();
   for(const p of matches){const li=document.createElement('li'),a=document.createElement('a');a.href=p.route;a.textContent=p.label;li.append(a);list.append(li);}
-  el('search-count').textContent=matches.length?`${matches.length} tools shown`:'No matching tools. Try a time such as 3 PM, hours, or business days.';
+  el('search-count').textContent=matches.length?`${matches.length} tool${matches.length===1?'':'s'} shown`:'No matching tools. Try a time such as 3 PM, hours, or business days.';
 }
 function openSearch(): void {searchDialog?.showModal();searchTools();input('tool-search').focus();}
 document.getElementById('open-search')?.addEventListener('click',openSearch);
