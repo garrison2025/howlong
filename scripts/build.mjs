@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { FIXED_UNITS, formatNumber } from '../dist/assets/core.js';
 
@@ -12,6 +13,9 @@ const siteURL=new URL(origin).origin;
 const publicBuild=siteURL.startsWith('https://')&&!/example\.(com|org)|\.invalid$/.test(new URL(siteURL).hostname);
 if(process.env.CF_PAGES&&!publicBuild)throw new Error('Set SITE_URL to the actual HTTPS deployment origin.');
 const dist=path.join(root,'dist');
+const appSource=await fs.readFile(path.join(dist,'assets/app.js'),'utf8');
+const assetVersion=createHash('sha256').update(appSource).update(await fs.readFile(path.join(dist,'assets/core.js'))).update(await fs.readFile(path.join(root,'src/styles.css'))).digest('hex').slice(0,12);
+await fs.writeFile(path.join(dist,'assets/app.js'),appSource.replace("from './core.js'",`from './core.js?v=${assetVersion}'`));
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const json=value=>JSON.stringify(value).replaceAll('<','\\u003c');
 const icon=(name,cls='')=>{
@@ -145,7 +149,7 @@ for(const item of data){
   const description=p.type==='duration'?`${durationAnswer(p)} See exact conversions, the calculation and a ready-to-use time converter.`:p.type==='clock'||p.type==='ambiguous'?`${item.h1} Get a live countdown in your time zone, with an explicit target date, AM/PM options and hours, minutes and seconds.`:p.type==='years'?`Calculate how long ago ${p.year} was using a visible reference date. Compare the start and end of the year or choose an exact date.`:`${item.h1}. ${config.description}`;
   const schema={'@context':'https://schema.org','@type':'WebPage',name:item.h1,url:siteURL+item.route,description};
   const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${siteURL}${item.route}"><meta name="robots" content="${publicBuild?'index,follow':'noindex,nofollow'}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${siteURL}${item.route}"><meta name="theme-color" content="#f6f7f3"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/styles.css"><script type="application/ld+json">${json(schema)}</script></head><body>${header(['ambiguous','home','holiday'].includes(p.type)?'clock':p.type==='converter'?'duration':p.type)}<main id="main" class="container">${main}</main>${footer()}<dialog id="search-dialog" aria-labelledby="search-title"><div class="search-heading"><h2 id="search-title">Find a time tool</h2><button type="button" id="close-search" class="icon-button" aria-label="Close search">${icon('close')}</button></div><label for="tool-search">Search by time, duration or task</label><input id="tool-search" type="search" placeholder="Try 3 PM, 72 hours, business days…"><p id="search-count" role="status"></p><ul id="search-results"></ul></dialog><script id="page-config" type="application/json">${json(p)}</script><script id="search-index" type="application/json">${json(searchIndex)}</script><script type="module" src="/assets/app.js"></script></body></html>`;
-  const target=path.join(dist,item.route,'index.html');await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,html);
+  const target=path.join(dist,item.route,'index.html');await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,html.replace('/assets/styles.css"',`/assets/styles.css?v=${assetVersion}"`).replace('/assets/app.js"',`/assets/app.js?v=${assetVersion}"`));
 }
 await fs.copyFile(path.join(root,'src/styles.css'),path.join(dist,'assets/styles.css'));
 await fs.writeFile(path.join(dist,'favicon.svg'),'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="#203b35"/><circle cx="32" cy="32" r="20" fill="none" stroke="#d6e8ad" stroke-width="3"/><path d="M32 19v14l10 6" fill="none" stroke="#d6e8ad" stroke-width="3" stroke-linecap="round"/></svg>');

@@ -23,7 +23,8 @@ test('all 72 pre-rendered pages have unique metadata, one H1, controls, and vali
     assert.match(html,new RegExp(`<link rel="canonical" href="https?://[^\"]+${page.route}">`));
     assert(!html.includes('example.com'));
     assert.match(html,/<html lang="en">/);
-    assert.match(html,/<script type="module" src="\/assets\/app.js"><\/script>/);
+    assert.match(html,/<script type="module" src="\/assets\/app\.js\?v=[a-f0-9]{12}"><\/script>/);
+    assert.match(html,/<link rel="stylesheet" href="\/assets\/styles\.css\?v=[a-f0-9]{12}">/);
     const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
     assert.equal(ids.length,new Set(ids).size,`Duplicate ID at ${page.route}`);
     for(const label of html.matchAll(/<label[^>]*for="([^"]+)"/g))assert(ids.includes(label[1]),`Missing field ${label[1]}`);
