@@ -131,7 +131,8 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       el('target-label').textContent=targetLabel;
       el('clock-now').textContent=`${timeFormat.format(now)} · ${zone.replaceAll('_',' ')}`;
       const sameDate=dateISO(targetDate)===today;
-      el('target-date').textContent=`${sameDate?'Today':dateISO(targetDate)===dateISO(addDays(parts,1))?'Tomorrow':prettyDate(targetDate)} · ${timeFormat.format(epoch)}`;
+      const dayLabel=sameDate?'Today · ':dateISO(targetDate)===dateISO(addDays(parts,1))?'Tomorrow · ':'';
+      el('target-date').textContent=`${dayLabel}${prettyDate(targetDate)} · ${timeFormat.format(epoch)}`;
       const label=passed?'Today’s target has passed':adjusted?'Adjusted for a daylight-saving time gap':sameDate?'Counting down to today’s target':'Counting down to the next target';
       el('countdown-note').textContent=label;
       const summary=`${passed?'Today’s target has passed. ':''}${left.days?`${left.days} days, `:''}${isHoliday?left.hours:hours} hours, ${left.minutes} minutes, ${left.seconds} seconds until ${targetLabel}. ${prettyDate(targetDate)} in ${zone}.`;
@@ -199,9 +200,10 @@ if(page.type==='duration'||page.type==='converter'){
   ['duration-value','duration-mode','calendar-start'].forEach(id=>el(id).addEventListener('input',()=>protect(convert)));
   document.getElementById('add-from-now')?.addEventListener('click',()=>protect(()=>{
     const seconds=fixedSeconds(number('duration-value'),select('duration-unit').value as Unit);
-    const end=Date.now()+seconds*1000;
+    const start=Date.now(),end=start+seconds*1000;
     if(!Number.isFinite(end)||Math.abs(end)>8.64e15)throw new Error('This duration is outside the supported date range.');
-    el('from-now-result').textContent=`Ends ${new Intl.DateTimeFormat('en-US',{dateStyle:'full',timeStyle:'long'}).format(end)} (${deviceZone}). This adds elapsed time, not calendar days.`;
+    const formatter=new Intl.DateTimeFormat('en-US',{dateStyle:'full',timeStyle:'long'});
+    el('from-now-result').textContent=`Starts ${formatter.format(start)}. Ends ${formatter.format(end)} (${deviceZone}). This adds elapsed time, not calendar days.`;
   }));
   protect(convert);
 }
