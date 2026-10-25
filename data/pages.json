@@ -1,0 +1,637 @@
+[
+  {
+    "route": "/how-long-is/a-fortnight/",
+    "kind": "时间定义",
+    "h1": "How Long Is a Fortnight?",
+    "title": "How Long Is a Fortnight? 14 Days or 2 Weeks",
+    "keywords": [
+      "how long is a fortnight"
+    ]
+  },
+  {
+    "route": "/how-long-is/a-century/",
+    "kind": "时间定义",
+    "h1": "How Long Is a Century?",
+    "title": "How Long Is a Century? 100 Years Explained",
+    "keywords": [
+      "how long is a century"
+    ]
+  },
+  {
+    "route": "/how-long-is/72-hours/",
+    "kind": "固定时长",
+    "h1": "How Long Is 72 Hours?",
+    "title": "How Long Is 72 Hours? 3 Days",
+    "keywords": [
+      "how long is 72 hours",
+      "how long is 72 hours in days"
+    ]
+  },
+  {
+    "route": "/how-long-is/90-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 90 Minutes?",
+    "title": "How Long Is 90 Minutes? 1 Hour 30 Minutes",
+    "keywords": [
+      "how long is 90 minutes",
+      "how long is 90 minutes in hours"
+    ]
+  },
+  {
+    "route": "/how-long-is/60-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 60 Months?",
+    "title": "How Long Is 60 Months? 5 Years",
+    "keywords": [
+      "how long is 60 months"
+    ]
+  },
+  {
+    "route": "/how-long-is/72-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 72 Months?",
+    "title": "How Long Is 72 Months? 6 Years",
+    "keywords": [
+      "how long is 72 months"
+    ]
+  },
+  {
+    "route": "/how-long-until/3-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 3 PM?",
+    "title": "How Long Until 3 PM? Live Countdown",
+    "keywords": [
+      "how long until 3pm",
+      "how long till 3pm",
+      "how long until 3 pm",
+      "how long until 3pm today",
+      "how much longer until 3pm today",
+      "how much longer until 3pm"
+    ]
+  },
+  {
+    "route": "/how-long-is/120-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 120 Minutes?",
+    "title": "How Long Is 120 Minutes? 2 Hours",
+    "keywords": [
+      "how long is 120 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/50-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 50 Months?",
+    "title": "How Long Is 50 Months? 4 Years 2 Months",
+    "keywords": [
+      "how long is 50 months"
+    ]
+  },
+  {
+    "route": "/how-long-is/90-days/",
+    "kind": "固定时长",
+    "h1": "How Long Is 90 Days?",
+    "title": "How Long Is 90 Days? 12 Weeks 6 Days",
+    "keywords": [
+      "how long is 90 days"
+    ]
+  },
+  {
+    "route": "/how-long-until/halloween/",
+    "kind": "节日倒计时",
+    "h1": "How Long Until Halloween?",
+    "title": "How Long Until Halloween? Live Countdown",
+    "keywords": [
+      "how long until halloween"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2018/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2018?",
+    "title": "How Long Ago Was 2018? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2018",
+      "how long ago was 2018 in years"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2019/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2019?",
+    "title": "How Long Ago Was 2019? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2019"
+    ]
+  },
+  {
+    "route": "/how-long-is/12-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 12 Weeks?",
+    "title": "How Long Is 12 Weeks? 84 Days",
+    "keywords": [
+      "how long is 12 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/180-days/",
+    "kind": "固定时长",
+    "h1": "How Long Is 180 Days?",
+    "title": "How Long Is 180 Days? 25 Weeks 5 Days",
+    "keywords": [
+      "how long is 180 days"
+    ]
+  },
+  {
+    "route": "/how-long-is/36-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 36 Months?",
+    "title": "How Long Is 36 Months? 3 Years",
+    "keywords": [
+      "how long is 36 months"
+    ]
+  },
+  {
+    "route": "/how-long-is/48-hours/",
+    "kind": "固定时长",
+    "h1": "How Long Is 48 Hours?",
+    "title": "How Long Is 48 Hours? 2 Days",
+    "keywords": [
+      "how long is 48 hours"
+    ]
+  },
+  {
+    "route": "/how-long-until/2-30-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 2:30 PM?",
+    "title": "How Long Until 2:30 PM? Live Countdown",
+    "keywords": [
+      "how long until 2:30",
+      "how long until 2 30",
+      "how long until 2 30 pm",
+      "how long till 2 30 pm"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2017/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2017?",
+    "title": "How Long Ago Was 2017? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2017"
+    ]
+  },
+  {
+    "route": "/how-long-is/6-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 6 Weeks?",
+    "title": "How Long Is 6 Weeks? 42 Days",
+    "keywords": [
+      "how long is 6 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-until/11-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 11 PM?",
+    "title": "How Long Until 11 PM? Live Countdown",
+    "keywords": [
+      "how long until 11pm",
+      "how long till 11pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/12-am/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 12 AM?",
+    "title": "How Long Until 12 AM? Live Countdown",
+    "keywords": [
+      "how long until 12 am",
+      "how long till 12 am"
+    ]
+  },
+  {
+    "route": "/how-long-until/12-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 12 PM?",
+    "title": "How Long Until 12 PM? Live Countdown",
+    "keywords": [
+      "how long until 12 pm",
+      "how long until 12pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/3-30/",
+    "kind": "未注明AM/PM的倒计时",
+    "h1": "How Long Until 3:30? AM and PM Countdowns",
+    "title": "How Long Until 3:30? AM and PM Countdowns Live Countdown",
+    "keywords": [
+      "how long until 3:30"
+    ]
+  },
+  {
+    "route": "/how-long-until/4-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 4 PM?",
+    "title": "How Long Until 4 PM? Live Countdown",
+    "keywords": [
+      "how long until 4pm"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2016/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2016?",
+    "title": "How Long Ago Was 2016? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2016"
+    ]
+  },
+  {
+    "route": "/how-long-is/10-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 10 Weeks?",
+    "title": "How Long Is 10 Weeks? 70 Days",
+    "keywords": [
+      "how long is 10 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/100-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 100 Minutes?",
+    "title": "How Long Is 100 Minutes? 1 Hour 40 Minutes",
+    "keywords": [
+      "how long is 100 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/1000-hours/",
+    "kind": "固定时长",
+    "h1": "How Long Is 1000 Hours?",
+    "title": "How Long Is 1000 Hours? 41 Days 16 Hours",
+    "keywords": [
+      "how long is 1000 hours"
+    ]
+  },
+  {
+    "route": "/how-long-is/1000-seconds/",
+    "kind": "固定时长",
+    "h1": "How Long Is 1000 Seconds?",
+    "title": "How Long Is 1000 Seconds? 16 Minutes 40 Seconds",
+    "keywords": [
+      "how long is 1000 seconds"
+    ]
+  },
+  {
+    "route": "/how-long-is/10000-hours/",
+    "kind": "固定时长",
+    "h1": "How Long Is 10000 Hours?",
+    "title": "How Long Is 10000 Hours? 416 Days 16 Hours",
+    "keywords": [
+      "how long is 10000 hours",
+      "10000 hours is how long"
+    ]
+  },
+  {
+    "route": "/how-long-is/18-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 18 Months?",
+    "title": "How Long Is 18 Months? 1 Year 6 Months",
+    "keywords": [
+      "how long is 18 months"
+    ]
+  },
+  {
+    "route": "/how-long-is/3-business-days/",
+    "kind": "工作日解释与计算",
+    "h1": "How Long Is 3 Business Days?",
+    "title": "How Long Is 3 Business Days? Calculate the Dates",
+    "keywords": [
+      "how long is 3 business days"
+    ]
+  },
+  {
+    "route": "/how-long-is/84-months/",
+    "kind": "月份时长",
+    "h1": "How Long Is 84 Months?",
+    "title": "How Long Is 84 Months? 7 Years",
+    "keywords": [
+      "how long is 84 months"
+    ]
+  },
+  {
+    "route": "/how-long-until/10-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 10 PM?",
+    "title": "How Long Until 10 PM? Live Countdown",
+    "keywords": [
+      "how long till 10pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/5-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 5 PM?",
+    "title": "How Long Until 5 PM? Live Countdown",
+    "keywords": [
+      "how long until 5 pm",
+      "how long until 5pm",
+      "how long till 5pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/6-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 6 PM?",
+    "title": "How Long Until 6 PM? Live Countdown",
+    "keywords": [
+      "how long until 6pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/7-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 7 PM?",
+    "title": "How Long Until 7 PM? Live Countdown",
+    "keywords": [
+      "how long until 7 pm"
+    ]
+  },
+  {
+    "route": "/how-long-is/100-hours/",
+    "kind": "固定时长",
+    "h1": "How Long Is 100 Hours?",
+    "title": "How Long Is 100 Hours? 4 Days 4 Hours",
+    "keywords": [
+      "how long is 100 hours"
+    ]
+  },
+  {
+    "route": "/how-long-is/13-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 13 Weeks?",
+    "title": "How Long Is 13 Weeks? 91 Days",
+    "keywords": [
+      "how long is 13 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/150-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 150 Minutes?",
+    "title": "How Long Is 150 Minutes? 2 Hours 30 Minutes",
+    "keywords": [
+      "how long is 150 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/16-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 16 Weeks?",
+    "title": "How Long Is 16 Weeks? 112 Days",
+    "keywords": [
+      "how long is 16 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/180-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 180 Minutes?",
+    "title": "How Long Is 180 Minutes? 3 Hours",
+    "keywords": [
+      "how long is 180 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/20-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 20 Weeks?",
+    "title": "How Long Is 20 Weeks? 140 Days",
+    "keywords": [
+      "how long is 20 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/26-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 26 Weeks?",
+    "title": "How Long Is 26 Weeks? 182 Days",
+    "keywords": [
+      "how long is 26 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/300-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 300 Minutes?",
+    "title": "How Long Is 300 Minutes? 5 Hours",
+    "keywords": [
+      "how long is 300 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/300-seconds/",
+    "kind": "固定时长",
+    "h1": "How Long Is 300 Seconds?",
+    "title": "How Long Is 300 Seconds? 5 Minutes",
+    "keywords": [
+      "how long is 300 seconds"
+    ]
+  },
+  {
+    "route": "/how-long-is/5-business-days/",
+    "kind": "工作日解释与计算",
+    "h1": "How Long Is 5 Business Days?",
+    "title": "How Long Is 5 Business Days? Calculate the Dates",
+    "keywords": [
+      "how long is 5 business days"
+    ]
+  },
+  {
+    "route": "/how-long-is/52-weeks/",
+    "kind": "固定时长",
+    "h1": "How Long Is 52 Weeks?",
+    "title": "How Long Is 52 Weeks? 364 Days",
+    "keywords": [
+      "how long is 52 weeks"
+    ]
+  },
+  {
+    "route": "/how-long-is/60-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 60 Minutes?",
+    "title": "How Long Is 60 Minutes? 1 Hour",
+    "keywords": [
+      "how long is 60 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/80-minutes/",
+    "kind": "固定时长",
+    "h1": "How Long Is 80 Minutes?",
+    "title": "How Long Is 80 Minutes? 1 Hour 20 Minutes",
+    "keywords": [
+      "how long is 80 minutes"
+    ]
+  },
+  {
+    "route": "/how-long-is/90-seconds/",
+    "kind": "固定时长",
+    "h1": "How Long Is 90 Seconds?",
+    "title": "How Long Is 90 Seconds? 1 Minute 30 Seconds",
+    "keywords": [
+      "how long is 90 seconds"
+    ]
+  },
+  {
+    "route": "/how-long-until/2-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 2 PM?",
+    "title": "How Long Until 2 PM? Live Countdown",
+    "keywords": [
+      "how long till 2pm",
+      "how long until 2 pm",
+      "how long until 2pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/1-30/",
+    "kind": "未注明AM/PM的倒计时",
+    "h1": "How Long Until 1:30? AM and PM Countdowns",
+    "title": "How Long Until 1:30? AM and PM Countdowns Live Countdown",
+    "keywords": [
+      "how long until 1:30"
+    ]
+  },
+  {
+    "route": "/how-long-until/3/",
+    "kind": "未注明AM/PM的倒计时",
+    "h1": "How Long Until 3? AM and PM Countdowns",
+    "title": "How Long Until 3? AM and PM Countdowns Live Countdown",
+    "keywords": [
+      "how long until 3"
+    ]
+  },
+  {
+    "route": "/how-long-until/4/",
+    "kind": "未注明AM/PM的倒计时",
+    "h1": "How Long Until 4? AM and PM Countdowns",
+    "title": "How Long Until 4? AM and PM Countdowns Live Countdown",
+    "keywords": [
+      "how long until 4"
+    ]
+  },
+  {
+    "route": "/how-long-until/5-30-am/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 5:30 AM?",
+    "title": "How Long Until 5:30 AM? Live Countdown",
+    "keywords": [
+      "how long until 5:30 a.m."
+    ]
+  },
+  {
+    "route": "/how-long-until/8-pm/",
+    "kind": "明确时刻倒计时",
+    "h1": "How Long Until 8 PM?",
+    "title": "How Long Until 8 PM? Live Countdown",
+    "keywords": [
+      "how long until 8pm"
+    ]
+  },
+  {
+    "route": "/how-long-until/thanksgiving/",
+    "kind": "节日倒计时",
+    "h1": "How Long Until Thanksgiving?",
+    "title": "How Long Until Thanksgiving? Live Countdown",
+    "keywords": [
+      "how long until thanksgiving"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2009/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2009?",
+    "title": "How Long Ago Was 2009? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2009"
+    ]
+  },
+  {
+    "route": "/how-long-ago-was/2013/",
+    "kind": "年份距今",
+    "h1": "How Long Ago Was 2013?",
+    "title": "How Long Ago Was 2013? Years, Months and Days",
+    "keywords": [
+      "how long ago was 2013"
+    ]
+  },
+  {
+    "route": "/business-days-calculator/",
+    "kind": "工作日工具",
+    "h1": "Business Days Calculator",
+    "title": "Business Days Calculator",
+    "keywords": [
+      "business days calculator"
+    ]
+  },
+  {
+    "route": "/years-ago-calculator/",
+    "kind": "距今通用工具",
+    "h1": "Years Ago Calculator",
+    "title": "Years Ago Calculator",
+    "keywords": [
+      "years ago calculator"
+    ]
+  },
+  {
+    "route": "/how-long-is/3-5-business-days/",
+    "kind": "工作日区间",
+    "h1": "How Long Is 3–5 Business Days?",
+    "title": "How Long Is 3–5 Business Days? Calculate the Dates",
+    "keywords": [
+      "how long is 3-5 business days"
+    ]
+  },
+  {
+    "route": "/",
+    "kind": "首页",
+    "h1": "Time and Date Calculators"
+  },
+  {
+    "route": "/how-long-until/",
+    "kind": "倒计时目录",
+    "h1": "How Long Until? Live Countdown Tools"
+  },
+  {
+    "route": "/time-duration-converter/",
+    "kind": "时长目录与工具",
+    "h1": "Time Duration Converter"
+  },
+  {
+    "route": "/holiday-countdown/",
+    "kind": "节日目录",
+    "h1": "Holiday Countdowns"
+  },
+  {
+    "route": "/about/",
+    "kind": "站务",
+    "h1": "About"
+  },
+  {
+    "route": "/contact/",
+    "kind": "站务",
+    "h1": "Contact"
+  },
+  {
+    "route": "/privacy/",
+    "kind": "站务",
+    "h1": "Privacy Policy"
+  },
+  {
+    "route": "/terms/",
+    "kind": "站务",
+    "h1": "Terms of Use"
+  }
+]
