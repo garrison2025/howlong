@@ -27,6 +27,8 @@ Owner approved the proposed tool-focused motion refinement. No keyword, route, t
 | Runtime logs | PASS sample | No warning/error entries after tested converter, disclosure and search actions |
 | Actual OS/browser reduced-motion emulation | NOT RUN | Preference branches and preference-change cancellation are unit-tested; this is not a claim of OS emulation |
 | Performance lab / field | NOT RUN / UNAVAILABLE | No new Lighthouse/CrUX/INP measurement; no numeric performance claim |
-| Production | PENDING | Verify deployed module/version, task flow and raw-HTML regression after publication |
+| Production | PASS | Release 9b46975aed6ab52620e8438ec90194acfae5a649, version 8926d16c4afa. Public page loaded the versioned module and 120 minutes produced 2 hours. All four public assets equal the local build; 72-route crawl passed |
+
+Production comparison to the preserved accepted baseline: keyword hash unchanged; zero changes to route statuses, titles, descriptions, H1, canonical, robots or main-content fingerprints across all 72 pages. Sitemap remains 72 entries, missing URLs return 404/noindex, no orphan routes, existing alias/slash redirects unchanged. Actual audit artifacts are in the delivery folder: `howlong-motion-production.json`, `howlong-motion-assets.json`, `howlong-motion-nonregression.json`.
 
 Screenshots show resting states only and are not proof of animation timing. Actual in-flight style, interaction observations and cancellation tests supply the motion evidence. No promotional video export is in scope. Existing accepted production baseline remains preserved; compare new crawl to it before recording acceptance. Revert this scoped release through Git history to roll back motion without changing tool data.
