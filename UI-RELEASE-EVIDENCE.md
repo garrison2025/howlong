@@ -37,7 +37,7 @@ Scope: existing-site alignment with Website Starter Standard. Operate calculator
 | Field performance, rankings | UNAVAILABLE | No connected CrUX/GSC field dataset |
 | Multilingual/drag/showcase | NOT APPLICABLE | Single English site, native controls, no visual cloning or video export |
 | Optional scanners/hooks | NOT RUN | No Impeccable binary, hook, extension or Live server installed |
-| Production verification | PENDING | Complete after GitHub/Pages release; see SEO-GEO release evidence |
+| Production verification | PASS scoped | Public 90-minute page: 120 → 2 hours; empty → aria-invalid=true and copy disabled; final public assets match local build byte-for-byte. See SEO-GEO release evidence |
 
 Screenshots are in the delivery folder above this repo: `howlong-standard-after-mobile.png`, `howlong-standard-360.png`, `howlong-standard-390.png`, `howlong-standard-768.png`, `howlong-standard-1024.png`, `howlong-standard-1440.png`. They are real local browser captures, not generated mockups. Before capture can transiently scale when viewport override changes; final settled screenshots and DOM widths are authoritative for the sampled sizes.
 
