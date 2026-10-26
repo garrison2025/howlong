@@ -14,8 +14,8 @@ const publicBuild=siteURL.startsWith('https://')&&!/example\.(com|org)|\.invalid
 if(process.env.CF_PAGES&&!publicBuild)throw new Error('Set SITE_URL to the actual HTTPS deployment origin.');
 const dist=path.join(root,'dist');
 const appSource=await fs.readFile(path.join(dist,'assets/app.js'),'utf8');
-const assetVersion=createHash('sha256').update(appSource).update(await fs.readFile(path.join(dist,'assets/core.js'))).update(await fs.readFile(path.join(root,'src/styles.css'))).digest('hex').slice(0,12);
-await fs.writeFile(path.join(dist,'assets/app.js'),appSource.replace("from './core.js'",`from './core.js?v=${assetVersion}'`));
+const assetVersion=createHash('sha256').update(appSource).update(await fs.readFile(path.join(dist,'assets/core.js'))).update(await fs.readFile(path.join(dist,'assets/motion.js'))).update(await fs.readFile(path.join(root,'src/styles.css'))).digest('hex').slice(0,12);
+await fs.writeFile(path.join(dist,'assets/app.js'),appSource.replace("from './core.js'",`from './core.js?v=${assetVersion}'`).replace("from './motion.js'",`from './motion.js?v=${assetVersion}'`));
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const json=value=>JSON.stringify(value).replaceAll('<','\\u003c');
 const icon=(name,cls='')=>{

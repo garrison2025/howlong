@@ -47,8 +47,20 @@ Desktop: result and controls share two columns. At <=760px, preserve result-befo
 - Search: native dialog, Escape to dismiss, real links and a truthful empty state. Navigation uses `aria-current` only for its actual destination.
 - Breadcrumb: semantic navigation, Home, real parent hub where distinct, current page; JSON-LD must describe those same items.
 - Buttons: hover background, visible focus, disabled opacity and no pointer cue. Native elements preserve keyboard operation.
-- Native CSS 160ms color/background/transform feedback only; no entrance delay or hidden essential copy. Reduced-motion disables transitions. Skip hidden-tab countdown work unless optional alerts are enabled; refresh from the actual timestamp when visible. Alert behavior remains subject to browser throttling and is not a guaranteed alarm.
+- Native CSS and Web Animations API share 160ms feedback / 200ms entrance timing and cubic-bezier(.2,0,0,1). Content is visible and calculations finish before motion starts. Skip hidden-tab countdown work unless optional alerts are enabled; refresh from the actual timestamp when visible. Alert behavior remains subject to browser throttling and is not a guaranteed alarm.
 - Contrast targets: WCAG AA 4.5:1 normal text and 3:1 large text; measured samples recorded in UI evidence, not assumed certification.
 - No network/API dependency for calculations. Network failure affects initial delivery, not an already-loaded tool. No-JS keeps fixed answers, methods and links; an explicit notice explains interactive limitations.
 
 DESIGN_VARIANCE 4, MOTION_INTENSITY 2, VISUAL_DENSITY 6 are design shorthand, not quality scores. No video/Figma export or matched-image cloning is in scope. Performance measurements and field data must be labeled NOT RUN/UNAVAILABLE when absent; byte counts are not Core Web Vitals.
+
+## Motion specification — 2026-10-26
+
+| Surface / trigger | Purpose and states | Timing / interruption |
+|---|---|---|
+| User changes a valid calculation | Updated primary value is immediately readable; opacity .65 → 1 gently identifies the new result | 160ms; cancel/restart only that element on rapid changes; no initial-load effect |
+| User edits countdown settings | Highlight target label only, after successful computation | 160ms; never animate per-second digits or ordinary timer ticks |
+| Native details opens | Content opacity .8 → 1, translateY(4px) → 0 | 200ms; native layout/state changes immediately, no height tween; close cancels immediately |
+| Search opens | Dialog opacity .8 → 1, translateY(6px)/scale(.99) → resting position | 200ms; focus moves to search immediately; Escape/backdrop/close remain immediate |
+| Button press | Main button 1px press, icon button scale(.96) | 160ms; no focus displacement or new layout |
+
+No animations on invalid results. Closed details, hidden tabs, newly enabled reduced-motion preference or re-triggered effects cancel pending animations. No fill-mode leaves stale inline styles. An unavailable Web Animations API simply uses the already visible final state. Reduced-motion skips JS animation and CSS transitions; no essential text or control depends on motion initialization. No package, loop, animated counter, server or media export is introduced. Browser interaction evidence and any unperformed emulation remain explicit in the release record.

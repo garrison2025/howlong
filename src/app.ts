@@ -1,4 +1,5 @@
 import { addDays, addMonths, businessDays, calendarEnd, dateDifference, dateEpoch, dateISO, daysInMonth, durationParts, FIXED_UNITS, fixedSeconds, formatNumber, holidayTarget, nextClock, parseDate, prettyDate, zonedParts, type CivilDate, type Unit } from './core.js';
+import { animateFeedback, cancelFeedback, motionTiming } from './motion.js';
 
 type PageConfig = { type: string; hour?: number; minute?: number; amount?: number; unit?: Unit; year?: number; holiday?: 'halloween'|'thanksgiving'; businessMin?: number; businessMax?: number; definition?: 'fortnight'|'century' };
 const page = JSON.parse(document.getElementById('page-config')?.textContent ?? '{}') as PageConfig;
@@ -11,16 +12,30 @@ function el<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 const input = (id: string) => el<HTMLInputElement>(id);
 const select = (id: string) => el<HTMLSelectElement>(id);
+document.querySelectorAll<HTMLDetailsElement>('details').forEach(details=>{
+  details.addEventListener('toggle',()=>{
+    for(const child of details.children){
+      if(!(child instanceof HTMLElement)||child.tagName==='SUMMARY')continue;
+      if(details.open)animateFeedback(child,[{opacity:.8,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)'}],motionTiming.enter);
+      else cancelFeedback(child);
+    }
+  });
+});
 function message(text: string, error = false): void {
   const status = document.getElementById('tool-status');
   if (status) {status.textContent=text;status.classList.toggle('error',error);}
 }
 function protect(action: () => void): void {
   const panel=document.getElementById('result-panel');
+  const previousSummary=document.getElementById('result-summary')?.textContent;
   document.querySelectorAll('[aria-invalid="true"]').forEach(field=>{field.removeAttribute('aria-invalid');field.removeAttribute('aria-describedby');});
   const copy=document.getElementById('copy-result') as HTMLButtonElement|null;
-  try { action(); panel?.removeAttribute('data-invalid'); document.getElementById('result-error')?.remove(); if(copy)copy.disabled=false; message(''); }
+  try {
+    action(); panel?.removeAttribute('data-invalid'); document.getElementById('result-error')?.remove(); if(copy)copy.disabled=false; message('');
+    if(previousSummary&&previousSummary!==document.getElementById('result-summary')?.textContent)animateFeedback(panel?.querySelector<HTMLElement>('.primary-value')??null,[{opacity:.65},{opacity:1}]);
+  }
   catch (error) {
+    cancelFeedback(panel?.querySelector<HTMLElement>('.primary-value')??null);
     const text=error instanceof Error?error.message:'Please check the values.';
     panel?.setAttribute('data-invalid','true');
     if(panel){let warning=document.getElementById('result-error');if(!warning){warning=document.createElement('p');warning.id='result-error';warning.className='result-error';panel.prepend(warning);}warning.textContent=text;}
@@ -70,7 +85,12 @@ function searchTools(): void {
   for(const p of matches){const li=document.createElement('li'),a=document.createElement('a');a.href=p.route;a.textContent=p.label;li.append(a);list.append(li);}
   el('search-count').textContent=matches.length?`${matches.length} tool${matches.length===1?'':'s'} shown`:'No matching tools. Try a time such as 3 PM, hours, or business days.';
 }
-function openSearch(): void {searchDialog?.showModal();searchTools();input('tool-search').focus();}
+function openSearch(): void {
+  if(searchDialog?.open)return;
+  searchDialog?.showModal();searchTools();input('tool-search').focus();
+  animateFeedback(searchDialog,[{opacity:.8,transform:'translateY(6px) scale(.99)'},{opacity:1,transform:'translateY(0) scale(1)'}],motionTiming.enter);
+}
+searchDialog?.addEventListener('close',()=>cancelFeedback(searchDialog));
 document.getElementById('open-search')?.addEventListener('click',openSearch);
 document.getElementById('close-search')?.addEventListener('click',()=>searchDialog?.close());
 document.getElementById('tool-search')?.addEventListener('input',searchTools);
@@ -175,7 +195,10 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       message(error instanceof Error?error.message:'Check your countdown settings.',true);
     }
   }
-  function changed():void{cached=null;previousTarget=null;alertedTarget=null;message('');tick();}
+  function changed():void{
+    cached=null;previousTarget=null;alertedTarget=null;message('');tick();
+    if(!el<HTMLButtonElement>('copy-result').disabled)animateFeedback(document.getElementById('target-label'),[{opacity:.65},{opacity:1}]);
+  }
   ['target-time','time-zone','target-day','clock-format'].forEach(id=>el(id).addEventListener('change',()=>{if(id==='clock-format')store('howlong-clock-format',select(id).value);changed();}));
   document.querySelectorAll<HTMLButtonElement>('[data-time]').forEach(button=>button.addEventListener('click',()=>{input('target-time').value=button.dataset.time!;changed();}));
   document.getElementById('switch-am-pm')?.addEventListener('click',()=>{const [h,m]=input('target-time').value.split(':');input('target-time').value=`${String((Number(h)+12)%24).padStart(2,'0')}:${m}`;changed();});
@@ -223,6 +246,7 @@ if(page.type==='duration'||page.type==='converter'){
     if(!Number.isFinite(end)||Math.abs(end)>8.64e15)throw new Error('This duration is outside the supported date range.');
     const formatter=new Intl.DateTimeFormat('en-US',{dateStyle:'full',timeStyle:'long'});
     el('from-now-result').textContent=`Starts ${formatter.format(start)}. Ends ${formatter.format(end)} (${deviceZone}). This adds elapsed time, not calendar days.`;
+    animateFeedback(el('from-now-result'),[{opacity:.65},{opacity:1}]);
   }));
   protect(convert);
 }
