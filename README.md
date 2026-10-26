@@ -63,6 +63,10 @@ No advertising, analytics or marketing pixels are installed. Calculator inputs s
 
 ## Validation
 
-`npm run check` checks all TypeScript. `npm test` builds the site and runs 21 test groups, including DST gaps/repeated hours, leap dates, month-end behavior, working-day rules, future dates, holiday rules, all keyword assignments, all 72 HTML pages, unique titles, labels, internal links, orphan detection and Sitemap entries. Browser interaction verification and a deployed-site crawl supplement those tests.
+`npm run check` checks all TypeScript. `npm test` builds the site and runs 22 test groups, including DST gaps/repeated hours, leap dates, month-end behavior, working-day rules, future dates, holiday rules, all keyword assignments, all 72 HTML pages, unique titles, labels, internal links, orphan detection, Sitemap entries and matching visible/structured breadcrumbs. Browser interaction verification and a deployed-site crawl supplement those tests.
+
+`npm run audit:production` crawls the confirmed production origin (or `SITE_URL`), verifies routes/assets/Sitemap/404s, and records `docs/production-baseline.json` for future regression comparisons. It records raw-HTML metadata, content fingerprints, schema types and links. It does not measure rankings or Web Vitals. Review the output before replacing an accepted baseline.
+
+Project-specific design, search architecture and actual verification evidence are documented in `DESIGN.md`, `SEO-GEO-PROJECT-BRIEF.md`, `UI-RELEASE-EVIDENCE.md`, `SEO-GEO-RELEASE-EVIDENCE.md` and `CLOUDFLARE.md`, following the owner's Website Starter Standard. No optional third-party scanner or hook is installed.
 
 The implementation covers the research keywords. Search indexing, rankings and clicks must be measured after publication; they are not guaranteed by page creation.

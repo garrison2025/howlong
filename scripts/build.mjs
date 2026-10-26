@@ -29,7 +29,10 @@ const dateInput=(id)=>`<input type="date" id="${id}" min="0100-01-01" max="9999-
 const status='<p id="tool-status" role="status" aria-live="polite" class="tool-status"></p>';
 const resultSummary='<p id="result-summary" class="sr-only"></p>';
 const copyButton=`<button type="button" id="copy-result" class="quiet-button">${icon('copy')} Copy result</button>`;
-const unitTable=(id,rows)=>`<div class="table-scroll"><table><thead><tr><th scope="col">Unit / reference</th><th scope="col">Result</th></tr></thead><tbody id="${id}">${rows.map(row=>`<tr><th scope="row">${esc(row[0])}</th><td>${esc(row[1])}</td></tr>`).join('')}</tbody></table></div>`;
+const unitTable=(id,rows)=>{
+  const table=`<div class="table-scroll"><table><thead><tr><th scope="col">Unit / reference</th><th scope="col">Result</th></tr></thead><tbody id="${id}">${rows.map(row=>`<tr><th scope="row">${esc(row[0])}</th><td>${esc(row[1])}</td></tr>`).join('')}</tbody></table></div>`;
+  return id==='conversion-units'?`<details class="result-breakdown"><summary>View all unit conversions</summary>${table}</details>`:table;
+};
 
 function typeOf(p){
   if(p.route==='/')return {type:'home',hour:15,minute:0};
@@ -51,6 +54,25 @@ function typeOf(p){
     if(match){const hour=Number(match[1]),minute=Number(match[2]??0),meridiem=match[3];return {type:meridiem?'clock':'ambiguous',hour:meridiem?(hour%12+(meridiem==='pm'?12:0)):hour,minute};}
   }
   return {type:p.route==='/holiday-countdown/'?'holiday-hub':'legal'};
+}
+
+function breadcrumbItems(item,p){
+  if(item.route==='/')return [];
+  const parent={clock:'/how-long-until/',ambiguous:'/how-long-until/',holiday:'/holiday-countdown/',duration:'/time-duration-converter/',converter:'/time-duration-converter/',definition:'/time-duration-converter/',business:'/business-days-calculator/',years:'/years-ago-calculator/'}[p.type];
+  const items=[{name:'Home',route:'/'}];
+  if(parent&&parent!==item.route){const hub=data.find(x=>x.route===parent);items.push({name:hub.h1.replace(/\?$/,''),route:parent});}
+  items.push({name:item.h1.replace(/\?$/,''),route:item.route});
+  return items;
+}
+
+function calculationSources(p){
+  const refs=[];
+  if(['clock','ambiguous','holiday'].includes(p.type))refs.push('<a href="https://www.iana.org/time-zones">IANA time-zone database</a> (time-zone rules are supplied by your browser)');
+  if(p.type==='holiday'&&p.holiday==='thanksgiving')refs.push('<a href="https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/">US Office of Personnel Management</a> (US Thanksgiving dates)');
+  if(p.type==='years'||p.type==='definition'||p.unit==='months')refs.push('<a href="https://aa.usno.navy.mil/faq/calendars">US Naval Observatory calendar guide</a> (Gregorian leap-year rules)');
+  if(['duration','converter'].includes(p.type)&&p.unit!=='months')refs.push('<a href="https://www.bipm.org/en/publications/si-brochure">BIPM SI Brochure</a> (time-unit reference)');
+  if(!refs.length)return '';
+  return `<aside class="source-note" aria-label="Calculation references"><h2>Calculation references</h2><p>${refs.join('; ')}. Month-end clamping and countdown target conventions are HowLong’s stated calculation choices. References checked October 26, 2026.</p></aside>`;
 }
 
 function header(active){return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="header-inner"><a href="/" class="brand" aria-label="HowLong home"><span class="brand-symbol">${icon('clock')}</span>How<span>Long</span><span class="brand-dot">.</span></a><nav id="main-nav" aria-label="Main navigation">${[['/how-long-until/','Countdowns','clock'],['/time-duration-converter/','Time converter','duration'],['/business-days-calculator/','Business days','business'],['/years-ago-calculator/','Date calculator','years']].map(([url,text,type])=>`<a href="${url}"${active===type?' aria-current="page"':''}>${text}</a>`).join('')}</nav><div class="header-actions"><button id="open-search" type="button" class="icon-button" aria-label="Search all tools">${icon('search')}</button><button id="theme-toggle" type="button" class="icon-button" aria-label="Toggle dark theme" aria-pressed="false">${icon('sun')}</button><button id="menu-toggle" type="button" class="icon-button menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">${icon('menu')}</button></div></div></header>`;}
@@ -125,12 +147,12 @@ function relatedLinks(current,p){
 
 const searchIndex=data.filter(p=>typeOf(p).type!=='legal').map(p=>({route:p.route,label:p.h1,terms:keywords.filter(k=>k.route===p.route).map(k=>k.keyword).join(' ')}));
 for(const item of data){
-  const p=typeOf(item),isHome=p.type==='home';
+  const p=typeOf(item),isHome=p.type==='home',breadcrumbs=breadcrumbItems(item,p);
   let main='';
   if(isHome)main=homeContent();
   else{
     const category=['clock','ambiguous'].includes(p.type)?'COUNTDOWN TO A TIME':p.type==='holiday'?'HOLIDAY COUNTDOWN':p.type==='duration'||p.type==='converter'?'TIME DURATION CONVERTER':p.type==='business'?'BUSINESS DAYS & DATES':p.type==='years'?'DATE & YEAR CALCULATOR':p.type==='definition'?'TIME, EXPLAINED':'HOWLONG';
-    main=`<div class="breadcrumb">${link('/','Home')}<span>/</span><span>${esc(category.toLowerCase())}</span></div><section class="page-intro"><span class="eyebrow">${category}</span><h1>${esc(item.h1)}</h1></section>`;
+    main=`<nav class="breadcrumb" aria-label="Breadcrumb">${breadcrumbs.map((b,i)=>`${i?'<span aria-hidden="true">/</span>':''}${i===breadcrumbs.length-1?`<span aria-current="page">${esc(b.name)}</span>`:link(b.route,b.name)}`).join('')}</nav><section class="page-intro"><span class="eyebrow">${category}</span><h1>${esc(item.h1)}</h1></section>`;
     if(['clock','ambiguous','holiday'].includes(p.type))main+=clockTool(p);
     else if(['duration','converter'].includes(p.type))main+=durationTool(p);
     else if(p.type==='business')main+=businessTool(p);
@@ -139,6 +161,8 @@ for(const item of data){
     else if(p.type==='holiday-hub')main+=`<p class="lede">Live countdowns to clearly defined holiday dates, in your selected time zone.</p><div class="link-grid">${data.filter(x=>typeOf(x).type==='holiday').map(x=>link(x.route,x.h1,'directory-link')).join('')}</div>`;
     else main+=legalContent(item.route);
     main+=explanation(p);
+    main+=calculationSources(p);
+    if(!['legal','holiday-hub','clock','ambiguous','holiday'].includes(p.type))main+='<noscript><p class="notice">Interactive calculations need JavaScript. The fixed answers, calculation rules and tool links remain available.</p></noscript>';
     if(item.route==='/how-long-until/')main+=directory(groups()[0]);
     else if(item.route==='/time-duration-converter/')main+=directory(groups()[1]);
     else if(item.route==='/business-days-calculator/')main+=directory(groups()[2]);
@@ -147,7 +171,11 @@ for(const item of data){
   }
   const title=(item.title??item.h1)+' | '+config.name;
   const description=p.type==='duration'?`${durationAnswer(p)} See exact conversions, the calculation and a ready-to-use time converter.`:p.type==='clock'||p.type==='ambiguous'?`${item.h1} Get a live countdown in your time zone, with an explicit target date, AM/PM options and hours, minutes and seconds.`:p.type==='years'?`Calculate how long ago ${p.year} was using a visible reference date. Compare the start and end of the year or choose an exact date.`:`${item.h1}. ${config.description}`;
-  const schema={'@context':'https://schema.org','@type':'WebPage',name:item.h1,url:siteURL+item.route,description};
+  const schema={'@context':'https://schema.org','@graph':[
+    {'@type':'WebSite','@id':siteURL+'/#website',name:config.name,url:siteURL+'/',inLanguage:'en'},
+    {'@type':'WebPage','@id':siteURL+item.route+'#webpage',name:item.h1,url:siteURL+item.route,description,inLanguage:'en',isPartOf:{'@id':siteURL+'/#website'},...(breadcrumbs.length?{breadcrumb:{'@id':siteURL+item.route+'#breadcrumb'}}:{})},
+    ...(breadcrumbs.length?[{'@type':'BreadcrumbList','@id':siteURL+item.route+'#breadcrumb',itemListElement:breadcrumbs.map((b,i)=>({'@type':'ListItem',position:i+1,name:b.name,item:siteURL+b.route}))}]:[])
+  ]};
   const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${siteURL}${item.route}"><meta name="robots" content="${publicBuild?'index,follow':'noindex,nofollow'}"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${siteURL}${item.route}"><meta name="theme-color" content="#f6f7f3"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/styles.css"><script type="application/ld+json">${json(schema)}</script></head><body>${header(['ambiguous','home','holiday'].includes(p.type)?'clock':p.type==='converter'?'duration':p.type)}<main id="main" class="container">${main}</main>${footer()}<dialog id="search-dialog" aria-labelledby="search-title"><div class="search-heading"><h2 id="search-title">Find a time tool</h2><button type="button" id="close-search" class="icon-button" aria-label="Close search">${icon('close')}</button></div><label for="tool-search">Search by time, duration or task</label><input id="tool-search" type="search" placeholder="Try 3 PM, 72 hours, business days…"><p id="search-count" role="status"></p><ul id="search-results"></ul></dialog><script id="page-config" type="application/json">${json(p)}</script><script id="search-index" type="application/json">${json(searchIndex)}</script><script type="module" src="/assets/app.js"></script></body></html>`;
   const target=path.join(dist,item.route,'index.html');await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,html.replace('/assets/styles.css"',`/assets/styles.css?v=${assetVersion}"`).replace('/assets/app.js"',`/assets/app.js?v=${assetVersion}"`));
 }

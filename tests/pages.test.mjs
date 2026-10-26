@@ -52,3 +52,22 @@ test('tricky keywords retain the correct distinct task and page',()=>{
   assert.equal(target('how long ago was august 2018'),'/how-long-ago-was/2018/');
   assert.equal(target('how long is 2-3 business days'),'/business-days-calculator/');
 });
+
+test('website entities and breadcrumbs match visible route hierarchy on every page',async()=>{
+  for(const page of pages){
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    const schema=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+    assert.equal(schema['@context'],'https://schema.org');
+    const website=schema['@graph'].find(n=>n['@type']==='WebSite');
+    const webPage=schema['@graph'].find(n=>n['@type']==='WebPage');
+    assert.equal(website.name,'HowLong');assert.equal(webPage.url,new URL(page.route,website.url).href);
+    assert.equal(webPage.isPartOf['@id'],website['@id']);
+    const breadcrumb=schema['@graph'].find(n=>n['@type']==='BreadcrumbList');
+    if(page.route==='/'){assert.equal(breadcrumb,undefined);continue;}
+    assert.match(html,/<nav class="breadcrumb" aria-label="Breadcrumb">/);
+    assert.equal(breadcrumb.itemListElement.at(-1).item,webPage.url);
+    breadcrumb.itemListElement.forEach((entry,i)=>{assert.equal(entry.position,i+1);assert(pages.some(p=>p.route===new URL(entry.item).pathname));assert(html.includes(entry.name.replaceAll('&','&amp;')));});
+    if(page.route==='/how-long-until/3-pm/')assert.equal(breadcrumb.itemListElement[1].item,new URL('/how-long-until/',website.url).href);
+    if(page.route==='/how-long-until/thanksgiving/')assert.equal(breadcrumb.itemListElement[1].item,new URL('/holiday-countdown/',website.url).href);
+  }
+});

@@ -17,12 +17,19 @@ function message(text: string, error = false): void {
 }
 function protect(action: () => void): void {
   const panel=document.getElementById('result-panel');
-  try { action(); panel?.removeAttribute('data-invalid'); document.getElementById('result-error')?.remove(); message(''); }
+  document.querySelectorAll('[aria-invalid="true"]').forEach(field=>{field.removeAttribute('aria-invalid');field.removeAttribute('aria-describedby');});
+  const copy=document.getElementById('copy-result') as HTMLButtonElement|null;
+  try { action(); panel?.removeAttribute('data-invalid'); document.getElementById('result-error')?.remove(); if(copy)copy.disabled=false; message(''); }
   catch (error) {
     const text=error instanceof Error?error.message:'Please check the values.';
     panel?.setAttribute('data-invalid','true');
     if(panel){let warning=document.getElementById('result-error');if(!warning){warning=document.createElement('p');warning.id='result-error';warning.className='result-error';panel.prepend(warning);}warning.textContent=text;}
     const summary=document.getElementById('result-summary');if(summary)summary.textContent='No result: '+text;
+    if(copy)copy.disabled=true;
+    const active=document.activeElement;
+    const invalid=[...document.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('.control-panel input:invalid,.control-panel select:invalid,.control-panel textarea:invalid')];
+    if(!invalid.length&&(active instanceof HTMLInputElement||active instanceof HTMLSelectElement||active instanceof HTMLTextAreaElement)&&active.closest('.control-panel'))invalid.push(active);
+    invalid.forEach(field=>{field.setAttribute('aria-invalid','true');field.setAttribute('aria-describedby','tool-status');});
     message(text,true);
   }
 }
@@ -35,6 +42,11 @@ function number(id: string): number {
   return result;
 }
 function tableRows(target: string, rows: string[][]): void {
+  const body=el(target);
+  if(body.children.length===rows.length&&[...body.children].every((row,i)=>row.children.length===rows[i]!.length)){
+    rows.forEach((row,i)=>row.forEach((value,j)=>{const cell=body.children[i]!.children[j]!;if(cell.textContent!==value)cell.textContent=value;}));
+    return;
+  }
   el(target).replaceChildren(...rows.map(row=>{
     const tr=document.createElement('tr');
     row.forEach((value,i)=>{const td=document.createElement(i===0?'th':'td');td.textContent=value;if(i===0)td.setAttribute('scope','row');tr.append(td);});
@@ -62,7 +74,10 @@ function openSearch(): void {searchDialog?.showModal();searchTools();input('tool
 document.getElementById('open-search')?.addEventListener('click',openSearch);
 document.getElementById('close-search')?.addEventListener('click',()=>searchDialog?.close());
 document.getElementById('tool-search')?.addEventListener('input',searchTools);
-document.addEventListener('keydown',event=>{if(event.key==='/'&&!(event.target instanceof HTMLInputElement)&&!(event.target instanceof HTMLTextAreaElement)&&!(event.target instanceof HTMLSelectElement)){event.preventDefault();openSearch();}});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&searchDialog?.open){event.preventDefault();searchDialog.close();return;}
+  if(event.key==='/'&&!(event.target instanceof HTMLInputElement)&&!(event.target instanceof HTMLTextAreaElement)&&!(event.target instanceof HTMLSelectElement)){event.preventDefault();openSearch();}
+});
 searchDialog?.addEventListener('click',event=>{if(event.target===searchDialog)searchDialog.close();});
 
 document.querySelectorAll<HTMLInputElement>('input[data-today]').forEach(field=>field.value=localToday());
@@ -111,6 +126,8 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       const [hourString,minuteString]=input('target-time').value.split(':');
       const hour=Number(hourString),minute=Number(minuteString),day=select('target-day').value as 'next'|'today'|'tomorrow';
       if(!input('target-time').value)throw new Error('Choose a target time.');
+      input('target-time').removeAttribute('aria-invalid');input('target-time').removeAttribute('aria-describedby');
+      el<HTMLButtonElement>('copy-result').disabled=false;
       const key=`${zone}/${today}/${hour}/${minute}/${day}`;
       if(previousTarget!==null&&now>=previousTarget&&now-previousTarget<5000)ring(previousTarget);
       let epoch:number,adjusted:boolean,passed=false,targetDate:CivilDate;
@@ -149,6 +166,8 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
       previousTarget=null;cached=null;
       for(const id of ['count-days','count-hours','count-minutes','count-seconds'])el(id).textContent='—';
       el('countdown-note').textContent='No countdown: check your settings.';
+      el<HTMLButtonElement>('copy-result').disabled=true;
+      if(!input('target-time').value){input('target-time').setAttribute('aria-invalid','true');input('target-time').setAttribute('aria-describedby','tool-status');}
       el('result-summary').textContent='No result: check your countdown settings.';
       el('target-date').textContent='Choose valid settings';
       tableRows('countdown-units',[]);
@@ -161,7 +180,7 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
   document.querySelectorAll<HTMLButtonElement>('[data-time]').forEach(button=>button.addEventListener('click',()=>{input('target-time').value=button.dataset.time!;changed();}));
   document.getElementById('switch-am-pm')?.addEventListener('click',()=>{const [h,m]=input('target-time').value.split(':');input('target-time').value=`${String((Number(h)+12)%24).padStart(2,'0')}:${m}`;changed();});
   document.getElementById('share-countdown')?.addEventListener('click',()=>{const url=new URL(location.href);url.hash=new URLSearchParams({time:input('target-time').value,zone:select('time-zone').value,day:select('target-day').value}).toString();void copyText(url.href);});
-  tick();setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+  tick();setInterval(()=>{if(!document.hidden)tick();},1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
 }
 
 if(page.type==='duration'||page.type==='converter'){
