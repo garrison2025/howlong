@@ -23,6 +23,8 @@ Owner approved adding a realtime second hand to the existing homepage illustrati
 | Phone layout | PASS sample | 390px: decorative dial display=none, document width 375px, no horizontal overflow; hidden-dial observer behavior covered by controlled tests |
 | Physical/OS reduced-motion emulation | NOT RUN | Unit preference simulation is not an OS/browser-emulation claim |
 | Lab/field performance | NOT RUN / UNAVAILABLE | No new Web Vitals measurement or claim; record actual module bytes after release |
-| Production | PENDING | Verify published module, clock movement and protected search outputs |
+| Production | PASS | Functional commit 33ba1f73c6e3513667486230a25a4837e126e40f; asset version 149851c9cd21. Public page displays the added hand and advances to current local time, with no browser error/warn entries. App, calculation core, motion, dial and stylesheet assets all match the local tested build |
+
+New dial module: 1,456 uncompressed bytes. This transfer measurement is not a Web Vitals score. Production crawl: 72 normal routes, 72 Sitemap entries, zero orphan pages, expected 404/noindex and existing redirects. Comparison to preserved baseline: keyword hash unchanged; zero changes in status/title/description/H1/canonical/robots. Only the homepage main-content fingerprint changes, for the approved additional hand. Audit artifacts in delivery folder: howlong-clock-assets.json, howlong-clock-production.json, howlong-clock-nonregression.json.
 
 No ranking, speed or accessibility-certification claim is inferred from these tests. The existing accepted search baseline remains preserved. A new crawl may change only the homepage content fingerprint for the approved added hand; metadata, keywords, routes and calculation core must stay unchanged.
