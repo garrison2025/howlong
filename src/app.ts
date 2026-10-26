@@ -1,5 +1,6 @@
 import { addDays, addMonths, businessDays, calendarEnd, dateDifference, dateEpoch, dateISO, daysInMonth, durationParts, FIXED_UNITS, fixedSeconds, formatNumber, holidayTarget, nextClock, parseDate, prettyDate, zonedParts, type CivilDate, type Unit } from './core.js';
 import { animateFeedback, cancelFeedback, motionTiming } from './motion.js';
+import { mountDial } from './dial.js';
 
 type PageConfig = { type: string; hour?: number; minute?: number; amount?: number; unit?: Unit; year?: number; holiday?: 'halloween'|'thanksgiving'; businessMin?: number; businessMax?: number; definition?: 'fortnight'|'century' };
 const page = JSON.parse(document.getElementById('page-config')?.textContent ?? '{}') as PageConfig;
@@ -119,6 +120,7 @@ document.getElementById('fullscreen')?.addEventListener('click',async()=>{
 
 if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.type==='home'){
   const isHoliday=page.type==='holiday';
+  const updateDial=mountDial(document.querySelector<HTMLElement>('.hero-dial'),()=>zonedParts(Date.now(),select('time-zone').value));
   let audio:AudioContext|null=null, notifications=false, previousTarget:number|null=null, alertedTarget:number|null=null;
   let cachedKey='', cached:ReturnType<typeof nextClock>|null=null;
   const hash=new URLSearchParams(location.hash.slice(1));
@@ -179,8 +181,7 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
         const base=hour%12,am=nextClock(now,base,minute,zone,day),pm=nextClock(now,base+12,minute,zone,day);
         for(const [id,result,period]of [['am-result',am,'AM'],['pm-result',pm,'PM']]as const){const d=durationParts(result.epoch-now);el(id).textContent=result.passed?'Today’s time has passed':`${d.days*24+d.hours}h ${d.minutes}m ${d.seconds}s`;const label=el(id).previousElementSibling;if(label)label.textContent=`${base||12}:${String(minute).padStart(2,'0')} ${period}`;}
       }
-      const hand=document.getElementById('clock-hand');if(hand)hand.style.transform=`rotate(${(parts.hour%12)*30+parts.minute/2}deg)`;
-      const minuteHand=document.querySelector<HTMLElement>('.dial-minute');if(minuteHand)minuteHand.style.transform=`rotate(${parts.minute*6}deg)`;
+      updateDial();
       const mini=document.getElementById('home-live-count');if(mini)mini.textContent=`${hours}h ${left.minutes}m ${left.seconds}s until ${targetLabel}`;
     }catch(error){
       previousTarget=null;cached=null;
@@ -197,6 +198,7 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
   }
   function changed():void{
     cached=null;previousTarget=null;alertedTarget=null;message('');tick();
+    updateDial(true);
     if(!el<HTMLButtonElement>('copy-result').disabled)animateFeedback(document.getElementById('target-label'),[{opacity:.65},{opacity:1}]);
   }
   ['target-time','time-zone','target-day','clock-format'].forEach(id=>el(id).addEventListener('change',()=>{if(id==='clock-format')store('howlong-clock-format',select(id).value);changed();}));

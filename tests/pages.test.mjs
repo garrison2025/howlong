@@ -76,7 +76,7 @@ test('runtime calculation and motion imports share the entry version and exist i
   const html=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8');
   const version=html.match(/app\.js\?v=([a-f0-9]{12})/)[1];
   const app=await fs.readFile(new URL('../dist/assets/app.js',import.meta.url),'utf8');
-  for(const module of ['core','motion']){
+  for(const module of ['core','motion','dial']){
     assert(app.includes(`from './${module}.js?v=${version}'`),`${module} cache version`);
     assert((await fs.stat(new URL(`../dist/assets/${module}.js`,import.meta.url))).size>0);
   }

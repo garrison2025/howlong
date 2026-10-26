@@ -63,7 +63,7 @@ No advertising, analytics or marketing pixels are installed. Calculator inputs s
 
 ## Validation
 
-`npm run check` checks all TypeScript. `npm test` builds the site and runs 26 test groups, including DST gaps/repeated hours, leap dates, month-end behavior, working-day rules, future dates, holiday rules, all keyword assignments, all 72 HTML pages, unique titles, labels, internal links, orphan detection, Sitemap entries, matching visible/structured breadcrumbs, versioned runtime imports, motion cancellation and reduced-motion/static fallbacks. Browser interaction verification and a deployed-site crawl supplement those tests.
+`npm run check` checks all TypeScript. `npm test` builds the site and runs 30 test groups, including DST gaps/repeated hours, leap dates, month-end behavior, working-day rules, future dates, holiday rules, all keyword assignments, all 72 HTML pages, unique titles, labels, internal links, orphan detection, Sitemap entries, matching visible/structured breadcrumbs, versioned runtime imports, motion cancellation, dial visibility/resynchronization and reduced-motion/static fallbacks. Browser interaction verification and a deployed-site crawl supplement those tests.
 
 `npm run audit:production` crawls the confirmed production origin (or `SITE_URL`), verifies routes/assets/Sitemap/404s, and records `docs/production-baseline.json` for future regression comparisons. It records raw-HTML metadata, content fingerprints, schema types and links. It does not measure rankings or Web Vitals. Review the output before replacing an accepted baseline.
 
