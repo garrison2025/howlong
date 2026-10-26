@@ -180,7 +180,7 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
   document.querySelectorAll<HTMLButtonElement>('[data-time]').forEach(button=>button.addEventListener('click',()=>{input('target-time').value=button.dataset.time!;changed();}));
   document.getElementById('switch-am-pm')?.addEventListener('click',()=>{const [h,m]=input('target-time').value.split(':');input('target-time').value=`${String((Number(h)+12)%24).padStart(2,'0')}:${m}`;changed();});
   document.getElementById('share-countdown')?.addEventListener('click',()=>{const url=new URL(location.href);url.hash=new URLSearchParams({time:input('target-time').value,zone:select('time-zone').value,day:select('target-day').value}).toString();void copyText(url.href);});
-  tick();setInterval(()=>{if(!document.hidden)tick();},1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+  tick();setInterval(()=>{if(!document.hidden||input('sound-alert').checked||notifications)tick();},1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
 }
 
 if(page.type==='duration'||page.type==='converter'){

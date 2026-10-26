@@ -47,7 +47,7 @@ Desktop: result and controls share two columns. At <=760px, preserve result-befo
 - Search: native dialog, Escape to dismiss, real links and a truthful empty state. Navigation uses `aria-current` only for its actual destination.
 - Breadcrumb: semantic navigation, Home, real parent hub where distinct, current page; JSON-LD must describe those same items.
 - Buttons: hover background, visible focus, disabled opacity and no pointer cue. Native elements preserve keyboard operation.
-- Native CSS 160ms color/background/transform feedback only; no entrance delay or hidden essential copy. Reduced-motion disables transitions. Skip hidden-tab countdown work; refresh from the actual timestamp when visible.
+- Native CSS 160ms color/background/transform feedback only; no entrance delay or hidden essential copy. Reduced-motion disables transitions. Skip hidden-tab countdown work unless optional alerts are enabled; refresh from the actual timestamp when visible. Alert behavior remains subject to browser throttling and is not a guaranteed alarm.
 - Contrast targets: WCAG AA 4.5:1 normal text and 3:1 large text; measured samples recorded in UI evidence, not assumed certification.
 - No network/API dependency for calculations. Network failure affects initial delivery, not an already-loaded tool. No-JS keeps fixed answers, methods and links; an explicit notice explains interactive limitations.
 

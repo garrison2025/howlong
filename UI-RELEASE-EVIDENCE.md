@@ -10,7 +10,7 @@ Scope: existing-site alignment with Website Starter Standard. Operate calculator
 | Small form/action text and action targets | P2 | Source: 13px input, 36px icons, 9–10px quiet actions | Fixed: mobile inputs 16px; icon/quiet actions >=44px; clearer labels/metadata |
 | Errors not associated with fields; copying stale results possible | P1 | Existing protect handler had no aria-invalid/describedby and left copy enabled | Fixed and exercised: empty converter and countdown field mark invalid, point to status, disable copy; recovery clears state |
 | Keyboard dialog dismissal lacked explicit handler | P2 | Initial Escape key exercise left search open | Fixed: explicit Escape handling; real key exercise now closes it |
-| Countdown recreated unit-table cells every tick and processed hidden pages | P2 | Source inspection | Reuse existing cells; skip hidden-tab calculation. No background CPU profile claimed |
+| Countdown recreated unit-table cells every tick and processed hidden pages | P2 | Source inspection | Reuse existing cells; skip hidden-tab calculation unless alerts are enabled, preserving optional alert behavior. No background CPU profile claimed |
 
 ## Actual verification ledger
 
