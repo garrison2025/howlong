@@ -74,3 +74,7 @@ IntersectionObserver gates drawing to a visible dial; offscreen and background t
 ### Mobile clock correction
 
 Owner requested the same clock on phones. At <=760px, replace the hidden illustration with an 82px dial beside the homepage heading. Reserve 112px beside the heading, scale all three hands/numerals, simplify the outer ring and omit the decorative tagline. Body copy and tool actions retain full width below the heading; no added full-width illustration section. Desktop remains unchanged. Visible mobile clocks use the existing guarded one-second updates; reduced-motion, hidden/offscreen pause and aria-hidden semantics still apply. Check 320/360/390/430/768/1280px and inspect actual heading/dial bounds before release.
+
+## Owner-approved functional expansion — 2026-10-27
+
+Five distinct tool routes extend the original 72 to 77; preserve all original routes and keyword ownership. Reuse result/control panels, native selects/details, errors, focus and restrained feedback. Mode changes reveal applicable fields before validation. Interval endpoints have independent repeated-hour choices. Timer ticks do not animate or announce every second. Share links encode inputs in a fragment; fixed events encode an exact occurrence. Save only on explicit action, keep at most 12 items locally, allow deletion and clearing; privacy copy explains this opt-in storage. Navigation label Date calculator now opens the unified date tool while the original years calculator remains accessible. No dependencies or visual redesign.

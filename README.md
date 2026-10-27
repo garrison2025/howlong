@@ -1,6 +1,6 @@
 # HowLong
 
-A static English-language time and date tool website. Includes 72 pre-rendered pages: 64 keyword landing pages and eight home, directory and site-information pages. All 83 original keywords and 17 screenshot variants have a documented primary URL.
+A static English-language time and date tool website. Includes 77 pre-rendered pages: the original 72 pages plus five functional calculators. The original 64 keyword target routes are preserved. All 83 original keywords and 17 screenshot variants have a documented primary URL.
 
 ## Run locally
 
@@ -70,3 +70,7 @@ No advertising, analytics or marketing pixels are installed. Calculator inputs s
 Project-specific design, search architecture and actual verification evidence are documented in `DESIGN.md`, `SEO-GEO-PROJECT-BRIEF.md`, `UI-RELEASE-EVIDENCE.md`, `SEO-GEO-RELEASE-EVIDENCE.md` and `CLOUDFLARE.md`, following the owner's Website Starter Standard. No optional third-party scanner or hook is installed.
 
 The implementation covers the research keywords. Search indexing, rankings and clicks must be measured after publication; they are not guaranteed by page creation.
+
+## Functional tools added October 27, 2026
+
+Clock/date-time intervals with breaks and explicit DST occurrences; arbitrary and yearly event countdowns with fixed-event sharing and .ics export; calendar date differences/addition; compound duration arithmetic; dated time-zone conversion. Existing conversion and working-day tools now support compound input, output-unit selection, between-date counting and optional standard US federal observances (2021–2100). Named calculations are opt-in device-local storage (12 maximum), with settings links and individual deletion/clear controls. No runtime dependencies or account system added.

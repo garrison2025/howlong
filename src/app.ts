@@ -1,6 +1,8 @@
 import { addDays, addMonths, businessDays, calendarEnd, dateDifference, dateEpoch, dateISO, daysInMonth, durationParts, FIXED_UNITS, fixedSeconds, formatNumber, holidayTarget, nextClock, parseDate, prettyDate, zonedParts, type CivilDate, type Unit } from './core.js';
 import { animateFeedback, cancelFeedback, motionTiming } from './motion.js';
 import { mountDial } from './dial.js';
+import { mountTools, soundControls } from './tools.js';
+import { businessBetween, eventHref, federalHolidays, normalizeSearch, parseDuration } from './tools-core.js';
 
 type PageConfig = { type: string; hour?: number; minute?: number; amount?: number; unit?: Unit; year?: number; holiday?: 'halloween'|'thanksgiving'; businessMin?: number; businessMax?: number; definition?: 'fortnight'|'century' };
 const page = JSON.parse(document.getElementById('page-config')?.textContent ?? '{}') as PageConfig;
@@ -41,6 +43,9 @@ function protect(action: () => void): void {
     panel?.setAttribute('data-invalid','true');
     if(panel){let warning=document.getElementById('result-error');if(!warning){warning=document.createElement('p');warning.id='result-error';warning.className='result-error';panel.prepend(warning);}warning.textContent=text;}
     const summary=document.getElementById('result-summary');if(summary)summary.textContent='No result: '+text;
+    const toolResult=document.getElementById('tool-result');if(toolResult)toolResult.textContent='Check your inputs';
+    if(page.type==='converter')el('conversion-lead').textContent='Choose valid inputs to calculate a result.';
+    const fromNow=document.getElementById('from-now-countdown');if(fromNow)fromNow.hidden=true;
     if(copy)copy.disabled=true;
     const active=document.activeElement;
     const invalid=[...document.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('.control-panel input:invalid,.control-panel select:invalid,.control-panel textarea:invalid')];
@@ -80,8 +85,8 @@ document.getElementById('menu-toggle')?.addEventListener('click',()=>{const open
 const searchDialog=document.getElementById('search-dialog') as HTMLDialogElement|null;
 const searchIndex=JSON.parse(document.getElementById('search-index')?.textContent??'[]') as {route:string;label:string;terms:string}[];
 function searchTools(): void {
-  const term=input('tool-search').value.toLowerCase().trim();
-  const matches=searchIndex.filter(p=>(p.label+' '+p.terms).toLowerCase().includes(term)).slice(0,12);
+  const term=normalizeSearch(input('tool-search').value),tokens=term.split(' ').filter(Boolean);
+  const matches=searchIndex.filter(p=>tokens.every(token=>normalizeSearch(p.label+' '+p.terms).split(' ').includes(token))).sort((a,b)=>Number(normalizeSearch(b.label).includes(term))-Number(normalizeSearch(a.label).includes(term))).slice(0,12);
   const list=el('search-results');list.replaceChildren();
   for(const p of matches){const li=document.createElement('li'),a=document.createElement('a');a.href=p.route;a.textContent=p.label;li.append(a);list.append(li);}
   el('search-count').textContent=matches.length?`${matches.length} tool${matches.length===1?'':'s'} shown`:'No matching tools. Try a time such as 3 PM, hours, or business days.';
@@ -105,7 +110,7 @@ document.querySelectorAll<HTMLInputElement>('input[data-today]').forEach(field=>
 document.querySelectorAll<HTMLSelectElement>('select[data-time-zone]').forEach(field=>{
   const zones=[...new Set([deviceZone,'UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Paris','Asia/Kolkata','Asia/Shanghai','Asia/Tokyo','Australia/Sydney',...Intl.supportedValuesOf('timeZone')])];
   field.replaceChildren(...zones.map(zone=>new Option(zone.replaceAll('_',' '),zone)));
-  field.value=deviceZone;
+  field.value=field.dataset.defaultZone||deviceZone;
 });
 
 async function copyText(text:string):Promise<void>{
@@ -121,23 +126,21 @@ document.getElementById('fullscreen')?.addEventListener('click',async()=>{
 if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.type==='home'){
   const isHoliday=page.type==='holiday';
   const updateDial=mountDial(document.querySelector<HTMLElement>('.hero-dial'),()=>zonedParts(Date.now(),select('time-zone').value));
-  let audio:AudioContext|null=null, notifications=false, previousTarget:number|null=null, alertedTarget:number|null=null;
+  const sound=soundControls();
+  let notifications=false, previousTarget:number|null=null, alertedTarget:number|null=null;
   let cachedKey='', cached:ReturnType<typeof nextClock>|null=null;
   const hash=new URLSearchParams(location.hash.slice(1));
   if(hash.get('time')&&/^\d{2}:\d{2}$/.test(hash.get('time')!))input('target-time').value=hash.get('time')!;
   if(hash.get('zone')&&[...select('time-zone').options].some(o=>o.value===hash.get('zone')))select('time-zone').value=hash.get('zone')!;
   if(hash.get('day')&&['next','today','tomorrow'].includes(hash.get('day')!))select('target-day').value=hash.get('day')!;
   const storedFormat=store('howlong-clock-format');if(storedFormat)select('clock-format').value=storedFormat;
-  input('sound-alert').addEventListener('change',()=>{
-    if(input('sound-alert').checked){try{audio??=new AudioContext();void audio.resume();}catch{input('sound-alert').checked=false;message('Sound is unavailable in this browser.');}}
-  });
   document.getElementById('enable-notifications')?.addEventListener('click',async()=>{
     if(!('Notification' in window)){message('Notifications are not supported here.');return;}
     try{const permission=await Notification.requestPermission();notifications=permission==='granted';message(notifications?'Notifications enabled while this page stays open.':'Notifications were not enabled. The countdown will still work.');}catch{message('Notifications are unavailable in this browser.');}
   });
   function ring(target:number):void{
     if(alertedTarget===target)return;alertedTarget=target;
-    if(input('sound-alert').checked&&audio){const oscillator=audio.createOscillator(),gain=audio.createGain();oscillator.connect(gain);gain.connect(audio.destination);oscillator.frequency.value=660;gain.gain.setValueAtTime(.12,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+1);oscillator.start();oscillator.stop(audio.currentTime+1);}
+    sound.play();
     if(notifications&&Notification.permission==='granted'){try{new Notification('Your countdown has finished',{body:document.title});}catch{/* Some mobile browsers require a service worker; the on-page result remains available. */}}
     message('The target time has arrived.');
   }
@@ -210,10 +213,14 @@ if(page.type==='clock'||page.type==='ambiguous'||page.type==='holiday'||page.typ
 
 if(page.type==='duration'||page.type==='converter'){
   function convert():void{
-    const value=number('duration-value'),unit=select('duration-unit').value as Unit,mode=select('duration-mode').value;
+    const unit=select('duration-unit').value as Unit,mode=select('duration-mode').value;
+    const composite=input('duration-composite').value.trim(),value=composite&&mode==='fixed'?0:number('duration-value');
     const calendar=mode==='calendar';el('calendar-fields').hidden=!calendar;
+    input('duration-value').disabled=!!composite&&!calendar;select('duration-unit').disabled=!!composite&&!calendar;
+    input('duration-composite').disabled=calendar;select('conversion-target').disabled=calendar;
+    const countdownLink=el<HTMLAnchorElement>('from-now-countdown');countdownLink.hidden=true;el('from-now-result').textContent='';
     const isMonth=unit==='months'||unit==='years';
-    el<HTMLButtonElement>('add-from-now').disabled=isMonth;
+    el<HTMLButtonElement>('add-from-now').disabled=isMonth&&!composite;
     el('from-now-result').textContent=isMonth?'For months and years, use a start date in calendar mode above.':'';
     if(calendar){
       const start=parseDate(input('calendar-start').value),end=calendarEnd(start,value,unit);
@@ -222,32 +229,37 @@ if(page.type==='duration'||page.type==='converter'){
       tableRows('conversion-units',[['Calendar days',formatNumber((dateEpoch(end)-dateEpoch(start))/86400000)],['End date',dateISO(end)],['Month-end rule','Clamp to the last valid day']]);
       el('result-summary').textContent=`${value} calendar ${unit} after ${dateISO(start)} is ${dateISO(end)}. Months preserve the day when possible, otherwise use month end.`;
     }else{
-      if(isMonth&&mode!=='approximate')throw new Error('Choose calendar or approximate mode for months and years.');
-      const seconds=isMonth?value*(unit==='years'?365.2425:365.2425/12)*86400:fixedSeconds(value,unit);
+      if(isMonth&&!composite&&mode!=='approximate')throw new Error('Choose calendar or approximate mode for months and years.');
+      if(composite&&mode!=='fixed')throw new Error('Compound durations use exact fixed-unit mode.');
+      const seconds=composite?parseDuration(composite):isMonth?value*(unit==='years'?365.2425:365.2425/12)*86400:fixedSeconds(value,unit);
       if(!Number.isFinite(seconds)||Math.abs(value)>1e12)throw new Error('Use a finite number within ±1 trillion.');
-      const preferred=unit==='seconds'?'minutes':unit==='minutes'?'hours':unit==='hours'?'days':unit==='days'?'weeks':unit==='weeks'?'days':'days';
+      const preferred=select('conversion-target').value as keyof typeof FIXED_UNITS;
+      if(!(preferred in FIXED_UNITS))throw new Error('Choose a valid output unit.');
       const result=seconds/FIXED_UNITS[preferred];
       el('conversion-result').textContent=`${formatNumber(result)} ${preferred}`;
-      el('conversion-caption').textContent=`${mode==='approximate'?'Approximate units · ':''}${formatNumber(value)} ${unit}`;
+      el('conversion-caption').textContent=`${mode==='approximate'?'Approximate units · ':''}${composite||`${formatNumber(value)} ${unit}`}`;
       const rows=Object.entries(FIXED_UNITS).map(([name,factor])=>[name[0]!.toUpperCase()+name.slice(1),formatNumber(seconds/factor)]);
       if(mode==='approximate'){rows.push(['Months (average)',formatNumber(seconds/(365.2425/12*86400))],['Years (average)',formatNumber(seconds/(365.2425*86400))]);}
       tableRows('conversion-units',rows);
-      el('result-summary').textContent=`${formatNumber(value)} ${unit} = ${formatNumber(result)} ${preferred}.${mode==='approximate'?' Approximate months use 365.2425 / 12 days; not a calendar date.':''}`;
+      el('result-summary').textContent=`${composite||`${formatNumber(value)} ${unit}`} = ${formatNumber(result)} ${preferred}.${mode==='approximate'?' Approximate months use 365.2425 / 12 days; not a calendar date.':''}`;
     }
+    if(page.type==='converter')el('conversion-lead').textContent=el('result-summary').textContent;
   }
   el('duration-unit').addEventListener('change',()=>{
     const u=select('duration-unit').value;
     if(u==='months'||u==='years')select('duration-mode').value='calendar';
     else if(select('duration-mode').value==='calendar'&&['seconds','minutes','hours'].includes(u))select('duration-mode').value='fixed';
+    select('conversion-target').value=u==='seconds'?'minutes':u==='minutes'?'hours':u==='hours'?'days':u==='days'?'weeks':'days';
     protect(convert);
   });
-  ['duration-value','duration-mode','calendar-start'].forEach(id=>el(id).addEventListener('input',()=>protect(convert)));
+  ['duration-value','duration-mode','calendar-start','conversion-target','duration-composite'].forEach(id=>el(id).addEventListener('input',()=>protect(convert)));
   document.getElementById('add-from-now')?.addEventListener('click',()=>protect(()=>{
-    const seconds=fixedSeconds(number('duration-value'),select('duration-unit').value as Unit);
+    const seconds=input('duration-composite').value.trim()?parseDuration(input('duration-composite').value):fixedSeconds(number('duration-value'),select('duration-unit').value as Unit);
     const start=Date.now(),end=start+seconds*1000;
     if(!Number.isFinite(end)||Math.abs(end)>8.64e15)throw new Error('This duration is outside the supported date range.');
     const formatter=new Intl.DateTimeFormat('en-US',{dateStyle:'full',timeStyle:'long'});
     el('from-now-result').textContent=`Starts ${formatter.format(start)}. Ends ${formatter.format(end)} (${deviceZone}). This adds elapsed time, not calendar days.`;
+    const link=el<HTMLAnchorElement>('from-now-countdown');link.href=eventHref(end,deviceZone,'Duration from now');link.hidden=false;
     animateFeedback(el('from-now-result'),[{opacity:.65},{opacity:1}]);
   }));
   protect(convert);
@@ -255,23 +267,45 @@ if(page.type==='duration'||page.type==='converter'){
 
 if(page.type==='business'){
   function calculateBusiness():void{
-    const start=parseDate(input('business-start').value),count=number('business-count');
+    const between=select('business-mode').value==='between';
+    el('business-advance-fields').hidden=between;el('business-between-fields').hidden=!between;el('business-breakdown').hidden=true;
+    input('business-count').disabled=between;input('business-range-end').disabled=between;
+    const start=parseDate(input('business-start').value),count=between?0:number('business-count');
     const weekend={'sat-sun':[0,6],'fri-sat':[5,6],'sun':[0],'none':[]}[select('weekend-rule').value];
     if(!weekend)throw new Error('Choose a valid weekend rule.');
-    const excluded=(el<HTMLTextAreaElement>('excluded-dates').value.trim().match(/[^\s,]+/g)??[]);
+    let excluded:string[]=(el<HTMLTextAreaElement>('excluded-dates').value.trim().match(/[^\s,]+/g)??[]);
+    if(input('business-federal').checked){
+      if(select('weekend-rule').value!=='sat-sun')throw new Error('Use Saturday & Sunday weekends with the standard US federal calendar, or enter custom exclusions.');
+      const end=between?parseDate(input('business-end').value):start;
+      if(start.year<2021||start.year>2100||end.year<2021||end.year>2100)throw new Error('The US federal calendar covers 2021–2100.');
+      excluded=[...excluded,...federalHolidays(between?Math.min(start.year,end.year):2021,between?Math.max(start.year,end.year):2100)];
+    }
     const options={weekend,excluded,includeStart:input('include-start').checked};
+    if(between){
+      const end=parseDate(input('business-end').value),result=businessBetween(start,end,{...options,includeStart:input('include-start').checked,includeEnd:input('business-include-end').checked});
+      el('business-result').textContent=`${formatNumber(result.days)} business days`;el('business-caption').textContent=`${dateISO(start)} → ${dateISO(end)}`;
+      const breakdown=`${result.total} included calendar dates: ${Math.abs(result.days)} working days, ${result.weekends} weekend dates, ${result.excluded} excluded dates. ${result.days<0?'The interval runs backward.':''}`;
+      el('business-breakdown').hidden=false;el('business-breakdown').textContent=breakdown;
+      let counted=0;tableRows('business-steps',result.steps.map(step=>[prettyDate(parseDate(step.date)),step.reason,step.reason==='Business day'?String(++counted):'Skipped']));
+      el('business-step-note').textContent=result.total>100?`Showing the first 100 of ${result.total} included calendar dates; totals use the full interval.`:'Every included calendar date is shown.';
+      el('result-summary').textContent=`${result.days} business days from ${dateISO(start)} to ${dateISO(end)}. ${breakdown} Start included: ${options.includeStart}. End included: ${input('business-include-end').checked}.`;
+      return;
+    }
     const first=businessDays(start,count,options),rawEnd=input('business-range-end').value.trim();
     let end=first;
     if(rawEnd){const second=Number(rawEnd);if(second<count)throw new Error('The range end must be at least the range start.');end=businessDays(start,second,options);}
+    if(input('business-federal').checked&&[first.end.year,end.end.year].some(year=>year<2021||year>2100))throw new Error('The resulting date is outside the supported US federal calendar (2021–2100).');
     el('business-result').textContent=rawEnd?`${dateISO(first.end)} → ${dateISO(end.end)}`:prettyDate(first.end);
     el('business-caption').textContent=`${count}${rawEnd?`–${rawEnd}`:''} business days from ${prettyDate(start)}`;
     tableRows('business-steps',end.steps.slice(0,100).map(step=>[prettyDate(parseDate(step.date)),step.reason,step.counted?String(step.number):'Skipped']));
     el('business-step-note').textContent=end.steps.length>100?`Showing the first 100 of ${end.steps.length} calendar dates. The result includes every date.`:end.steps.length?'Every calendar date in this calculation is shown.':'Zero business days returns the start date.';
-    el('result-summary').textContent=`${count}${rawEnd?`–${rawEnd}`:''} business days from ${dateISO(start)}: ${dateISO(first.end)}${rawEnd?` to ${dateISO(end.end)}`:''}. Start date ${options.includeStart?'included when eligible':'excluded'}. Public holidays are excluded only when entered above.`;
+    el('result-summary').textContent=`${count}${rawEnd?`–${rawEnd}`:''} business days from ${dateISO(start)}: ${dateISO(first.end)}${rawEnd?` to ${dateISO(end.end)}`:''}. Start date ${options.includeStart?'included when eligible':'excluded'}. Holidays are excluded only when the federal calendar is selected or dates are entered above.`;
   }
-  ['business-start','business-count','business-range-end','weekend-rule','excluded-dates','include-start'].forEach(id=>el(id).addEventListener('input',()=>protect(calculateBusiness)));
+  ['business-mode','business-end','business-include-end','business-federal','business-start','business-count','business-range-end','weekend-rule','excluded-dates','include-start'].forEach(id=>el(id).addEventListener('input',()=>protect(calculateBusiness)));
   protect(calculateBusiness);
 }
+
+
 
 if(page.type==='years'){
   function differenceText(date:CivilDate,reference:CivilDate):string{const d=dateDifference(date,reference);return `${d.years} year${d.years===1?'':'s'}, ${d.months} month${d.months===1?'':'s'}, ${d.days} day${d.days===1?'':'s'} ${d.future?'after':'before'} the reference date (${formatNumber(d.totalDays)} days)`;}
@@ -304,3 +338,5 @@ if(page.type==='definition'){
 }
 
 document.getElementById('copy-report')?.addEventListener('click',()=>void copyText(`HowLong feedback\nPage: ${location.origin}${location.pathname}\nTime zone: ${deviceZone}\nObserved result:\nExpected result:\nSteps to reproduce:\n`));
+
+mountTools(page.type,{protect,message,copyText,tableRows});

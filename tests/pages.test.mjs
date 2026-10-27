@@ -1,18 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-const pages=JSON.parse(await fs.readFile(new URL('../data/pages.json',import.meta.url),'utf8'));
+import { extraPages } from '../scripts/tools-markup.mjs';
+const originalPages=JSON.parse(await fs.readFile(new URL('../data/pages.json',import.meta.url),'utf8'));
+const pages=[...originalPages,...extraPages];
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 test('all 83 original and 17 screenshot keywords have one primary page across 64 targets',()=>{
-  assert.equal(pages.length,72);
-  assert.equal(new Set(pages.map(p=>p.route)).size,72);
+  assert.equal(originalPages.length,72);assert.equal(pages.length,77);
+  assert.equal(new Set(pages.map(p=>p.route)).size,77);
   assert.equal(keywords.filter(k=>k.source==='original').length,83);
   assert.equal(keywords.filter(k=>k.source==='screenshot').length,17);
   assert.equal(new Set(keywords.map(k=>k.keyword)).size,100);
   assert.equal(new Set(keywords.filter(k=>k.source==='original').map(k=>k.route)).size,64);
   for(const k of keywords)assert(pages.some(p=>p.route===k.route),k.keyword);
 });
-test('all 72 pre-rendered pages have unique metadata, one H1, controls, and valid internal links',async()=>{
+test('all 77 pre-rendered pages have unique metadata, one H1, controls, and valid internal links',async()=>{
   const titles=new Set(),routes=new Set(pages.map(p=>p.route)),incoming=new Map(pages.map(p=>[p.route,0]));
   for(const page of pages){
     const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
@@ -39,7 +41,7 @@ test('all 72 pre-rendered pages have unique metadata, one H1, controls, and vali
 test('sitemap contains all canonical pages and no parameter URLs, and 404 is not indexed',async()=>{
   const xml=await fs.readFile(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
   const locations=[...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]);
-  assert.equal(locations.length,72);assert.equal(new Set(locations).size,72);
+  assert.equal(locations.length,77);assert.equal(new Set(locations).size,77);
   for(const location of locations){const url=new URL(location);assert.equal(url.search,'');assert.equal(url.hash,'');assert(pages.some(p=>p.route===url.pathname));}
   const html=await fs.readFile(new URL('../dist/404.html',import.meta.url),'utf8');assert.match(html,/name="robots" content="noindex"/);
 });
@@ -76,7 +78,7 @@ test('runtime calculation and motion imports share the entry version and exist i
   const html=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8');
   const version=html.match(/app\.js\?v=([a-f0-9]{12})/)[1];
   const app=await fs.readFile(new URL('../dist/assets/app.js',import.meta.url),'utf8');
-  for(const module of ['core','motion','dial']){
+  for(const module of ['core','motion','dial','tools','tools-core']){
     assert(app.includes(`from './${module}.js?v=${version}'`),`${module} cache version`);
     assert((await fs.stat(new URL(`../dist/assets/${module}.js`,import.meta.url))).size>0);
   }
