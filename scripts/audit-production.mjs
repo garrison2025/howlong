@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto';
 const root=new URL('../',import.meta.url);
 import { extraPages } from './tools-markup.mjs';
 const pages=[...JSON.parse(await fs.readFile(new URL('data/pages.json',root),'utf8')),...extraPages];
-const origin=process.env.SITE_URL||'https://howlong-7sh.pages.dev';
+const config=JSON.parse(await fs.readFile(new URL('site.config.json',root),'utf8'));
+const origin=process.env.SITE_URL||config.url;
 const results=[],queue=[...pages];
 const hash=text=>createHash('sha256').update(text).digest('hex');
 await Promise.all(Array.from({length:6},async()=>{

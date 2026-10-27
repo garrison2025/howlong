@@ -99,7 +99,7 @@ export function calendarFile(epoch:number,name:string,stamp:number):string {
   const utc=(value:number)=>new Date(value).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
   if(!Number.isFinite(epoch)||new Date(epoch).getUTCFullYear()<100||new Date(epoch).getUTCFullYear()>9999)throw new Error('Choose a valid event date before exporting.');
   const escaped=name.replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
-  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//HowLong//Time tools//EN','BEGIN:VEVENT',`UID:${Math.floor(epoch)}-${Math.floor(stamp)}@howlong`, `DTSTAMP:${utc(stamp)}`,`DTSTART:${utc(epoch)}`,`SUMMARY:${escaped}`,'END:VEVENT','END:VCALENDAR'];
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Time Duration Calculator//Time tools//EN','BEGIN:VEVENT',`UID:${Math.floor(epoch)}-${Math.floor(stamp)}@timedurationcalculator.cc`, `DTSTAMP:${utc(stamp)}`,`DTSTART:${utc(epoch)}`,`SUMMARY:${escaped}`,'END:VEVENT','END:VCALENDAR'];
   return lines.map(line=>{let folded='',bytes=0;for(const character of line){const width=new TextEncoder().encode(character).length;if(bytes+width>75){folded+='\r\n ';bytes=1;}folded+=character;bytes+=width;}return folded;}).join('\r\n')+'\r\n';
 }
 

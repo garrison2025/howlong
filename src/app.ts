@@ -337,6 +337,6 @@ if(page.type==='definition'){
   protect(calculateDefinition);
 }
 
-document.getElementById('copy-report')?.addEventListener('click',()=>void copyText(`HowLong feedback\nPage: ${location.origin}${location.pathname}\nTime zone: ${deviceZone}\nObserved result:\nExpected result:\nSteps to reproduce:\n`));
+document.getElementById('copy-report')?.addEventListener('click',()=>void copyText(`Time Duration Calculator feedback\nPage: ${location.origin}${location.pathname}\nTime zone: ${deviceZone}\nObserved result:\nExpected result:\nSteps to reproduce:\n`));
 
 mountTools(page.type,{protect,message,copyText,tableRows});

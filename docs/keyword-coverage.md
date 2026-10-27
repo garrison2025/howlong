@@ -1,6 +1,6 @@
 # Keyword coverage
 
-83 original keywords and 17 screenshot variants map to 64 landing pages. The full site has 72 pages. This documents implementation coverage, not ranking guarantees.
+83 original keywords and 17 screenshot variants map to 64 landing pages. The full site has 77 pages. This documents implementation coverage, not ranking guarantees.
 
 | Keyword | Primary page | Source |
 |---|---|---|

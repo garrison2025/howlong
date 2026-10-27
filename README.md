@@ -1,4 +1,4 @@
-# HowLong
+# Time Duration Calculator
 
 A static English-language time and date tool website. Includes 77 pre-rendered pages: the original 72 pages plus five functional calculators. The original 64 keyword target routes are preserved. All 83 original keywords and 17 screenshot variants have a documented primary URL.
 
@@ -57,7 +57,7 @@ There are no runtime dependencies. TypeScript is the only development dependency
 
 ## Identity, feedback and privacy
 
-The working display name is HowLong, based on the supplied repository. Change it in `site.config.json` when a permanent brand is chosen. The contact page uses the real repository Issues channel. `contactEmail` stays empty unless the owner supplies a real address.
+The display name is Time Duration Calculator. The owner supplied https://timedurationcalculator.cc and contact@timedurationcalculator.cc. The contact page exposes the email address and the existing repository Issues channel. Identity and contact details are configured in site.config.json.
 
 No advertising, analytics or marketing pixels are installed. Calculator inputs stay in the browser. Only theme and clock-format preferences are saved to local storage. Optional shared countdown links contain settings in their URL fragment.
 

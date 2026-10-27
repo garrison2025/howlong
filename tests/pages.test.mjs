@@ -4,7 +4,27 @@ import fs from 'node:fs/promises';
 import { extraPages } from '../scripts/tools-markup.mjs';
 const originalPages=JSON.parse(await fs.readFile(new URL('../data/pages.json',import.meta.url),'utf8'));
 const pages=[...originalPages,...extraPages];
+const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
+
+test('domain migration consistently emits the configured origin, site identity and public contact address',async()=>{
+  assert.equal(config.url,'https://timedurationcalculator.cc');
+  assert.equal(config.contactEmail,'contact@timedurationcalculator.cc');
+  const origin=new URL(process.env.SITE_URL||config.url).origin;
+  for(const page of pages){
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    assert(html.includes(`<link rel="canonical" href="${origin}${page.route}">`),page.route);
+    assert(html.includes(`<meta property="og:url" content="${origin}${page.route}">`),page.route);
+    assert(!html.includes('howlong-7sh.pages.dev'),page.route);
+    const schema=JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+    assert.equal(schema['@graph'].find(node=>node['@type']==='WebSite').url,origin+'/');
+  }
+  const contact=await fs.readFile(new URL('../dist/contact/index.html',import.meta.url),'utf8');
+  assert(contact.includes('href="mailto:contact@timedurationcalculator.cc"'));
+  assert(contact.includes('>contact@timedurationcalculator.cc</a>'));
+  const robots=await fs.readFile(new URL('../dist/robots.txt',import.meta.url),'utf8');
+  if(origin.startsWith('https://'))assert(robots.includes(`Sitemap: ${origin}/sitemap.xml`));
+});
 test('all 83 original and 17 screenshot keywords have one primary page across 64 targets',()=>{
   assert.equal(originalPages.length,72);assert.equal(pages.length,77);
   assert.equal(new Set(pages.map(p=>p.route)).size,77);
@@ -62,7 +82,7 @@ test('website entities and breadcrumbs match visible route hierarchy on every pa
     assert.equal(schema['@context'],'https://schema.org');
     const website=schema['@graph'].find(n=>n['@type']==='WebSite');
     const webPage=schema['@graph'].find(n=>n['@type']==='WebPage');
-    assert.equal(website.name,'HowLong');assert.equal(webPage.url,new URL(page.route,website.url).href);
+    assert.equal(website.name,config.name);assert.equal(webPage.url,new URL(page.route,website.url).href);
     assert.equal(webPage.isPartOf['@id'],website['@id']);
     const breadcrumb=schema['@graph'].find(n=>n['@type']==='BreadcrumbList');
     if(page.route==='/'){assert.equal(breadcrumb,undefined);continue;}

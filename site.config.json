@@ -1,7 +1,7 @@
 {
-  "name": "HowLong",
+  "name": "Time Duration Calculator",
   "description": "Free, precise countdowns, time conversions and date calculators. All calculations happen on your device.",
-  "url": "",
+  "url": "https://timedurationcalculator.cc",
   "repository": "https://github.com/garrison2025/howlong",
-  "contactEmail": ""
+  "contactEmail": "contact@timedurationcalculator.cc"
 }

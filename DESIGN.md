@@ -78,3 +78,7 @@ Owner requested the same clock on phones. At <=760px, replace the hidden illustr
 ## Owner-approved functional expansion — 2026-10-27
 
 Five distinct tool routes extend the original 72 to 77; preserve all original routes and keyword ownership. Reuse result/control panels, native selects/details, errors, focus and restrained feedback. Mode changes reveal applicable fields before validation. Interval endpoints have independent repeated-hour choices. Timer ticks do not animate or announce every second. Share links encode inputs in a fragment; fixed events encode an exact occurrence. Save only on explicit action, keep at most 12 items locally, allow deletion and clearing; privacy copy explains this opt-in storage. Navigation label Date calculator now opens the unified date tool while the original years calculator remains accessible. No dependencies or visual redesign.
+
+## Owner-selected domain and identity — 2026-10-27
+
+Use Time Duration Calculator and contact@timedurationcalculator.cc on the owner-selected timedurationcalculator.cc domain. Replace the temporary HowLong wordmark with the full name on two lines; retain the clock symbol, existing tools, motion and layout. Verify the longer name and contact address at 320/390/768/1280px. Original keyword routes and calculator rules remain unchanged.

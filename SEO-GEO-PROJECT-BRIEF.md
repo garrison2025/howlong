@@ -53,3 +53,7 @@ No new owner sign-off is needed for the unchanged approved keyword/route map or 
 ## Owner-approved functional expansion — 2026-10-27
 
 77 canonical pages: the original 72 plus /time-duration-calculator/, /countdown-to-date/, /date-calculator/, /time-calculator/ and /time-zone-converter/. Original 83 + 17 keyword strings and 64 primary target routes remain unchanged. No volume or difficulty metrics invented for the additional tools. Unique initial HTML titles, descriptions, H1s, methods and links describe each real operation. All five are linked from Home and generic calculator hubs, appear in search and Sitemap, and keep a self-canonical without settings fragments. Generic converter explanatory calculations are explicitly worked examples. Optional US federal observances follow OPM standard Monday–Friday observed-date conventions, 2021–2100; custom/state/employer closures remain separate.
+
+## Owner-selected production domain — 2026-10-27
+
+Canonical origin becomes https://timedurationcalculator.cc, site name Time Duration Calculator, public email contact@timedurationcalculator.cc. Preserve all original 83 + 17 keyword strings, their primary URLs, and all 77 paths. Only origin/site identity changes in canonical, Open Graph, WebSite/WebPage/breadcrumb entities, robots and Sitemap. Publish redirects only after the custom domain and HTTPS are verified. Do not overwrite the historical baseline or claim Search Console ownership/indexing without evidence.

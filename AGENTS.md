@@ -1,9 +1,9 @@
-# HowLong project rules
+# Time Duration Calculator project rules
 
 Apply the owner's [Website Starter Standard](https://github.com/chenmu2024/Website-Starter-Standard) in proportion to this existing static calculator site. Read `DESIGN.md` and `SEO-GEO-PROJECT-BRIEF.md` before UI, template or search changes. Record actual checks in the release evidence files; NOT RUN is not PASS.
 
 - Preserve `data/keywords.json` (83 original + 17 supplemental variants), its primary intent ownership, 64 original keyword target routes and 77 total routes (72 original + 5 owner-approved functional tools) unless the owner explicitly changes scope.
-- Preserve brand, working calculation rules, field IDs/order, navigation labels and legal/privacy copy. No revenue assessment is in scope.
+- The owner selected Time Duration Calculator, timedurationcalculator.cc and contact@timedurationcalculator.cc on 2026-10-27. Preserve this identity, working calculation rules, field IDs/order, navigation labels and legal/privacy copy. No revenue assessment is in scope.
 - Reuse existing TypeScript/static builder/CSS. Do not add runtime dependencies, paid infrastructure, scanner hooks or external analytics by default.
 - Public SEO content, metadata, links and truthful schema must be in initial HTML. No duplicate AI-answer pages, fake reviews or ranking guarantees.
 - Run `npm run check` and `npm test`; inspect relevant real browser flows, narrow/wide layouts and error states. After authorized publication, verify production and compare its search baseline.
