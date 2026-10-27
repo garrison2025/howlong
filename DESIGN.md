@@ -82,3 +82,7 @@ Five distinct tool routes extend the original 72 to 77; preserve all original ro
 ## Owner-selected domain and identity — 2026-10-27
 
 Use Time Duration Calculator and contact@timedurationcalculator.cc on the owner-selected timedurationcalculator.cc domain. Replace the temporary HowLong wordmark with the full name on two lines; retain the clock symbol, existing tools, motion and layout. Verify the longer name and contact address at 320/390/768/1280px. Original keyword routes and calculator rules remain unchanged.
+
+## Owner-approved SEO entry improvement — 2026-10-28
+
+Add Duration calculator to the existing navigation and promote Calculate time duration in the homepage hero. Retain the working homepage countdown and existing navigation labels. Actions may wrap; narrow desktop navigation uses compact rows within a growing header. Preserve the live dial, reduced-motion behavior and all calculator controls.

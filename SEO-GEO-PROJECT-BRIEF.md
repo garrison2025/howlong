@@ -1,5 +1,9 @@
 # HowLong search architecture
 
+## Approved SEO implementation — 2026-10-28
+
+The current identity is Time Duration Calculator on https://timedurationcalculator.cc/. Preserve the existing 77 routes and all approved keyword ownership. The homepage remains a broad directory; its new prominent duration action links to /time-duration-calculator/, the specific interval task. Recommendations prioritize the same duration unit and nearest values, or matching clock intent and nearby times. Preset explanations and worked interval examples are present in initial HTML. No new indexable routes, artificial schema, tracking or keyword expansion. Search Console and field performance remain unverified; see docs/seo-release-20261028.md for actual release checks. Earlier sections below record historical decisions and URLs.
+
 Reviewed 2026-10-26. Existing-site alignment with [Website Starter Standard](https://github.com/chenmu2024/Website-Starter-Standard); approved V2 intent map retained.
 
 ## Identity, audience and protected scope

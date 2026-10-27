@@ -7,6 +7,30 @@ const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 
+test('search entry and worked examples are available before JavaScript',async()=>{
+  const home=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8');
+  assert.match(home,/<nav id="main-nav"[^>]*>.*?href="\/time-duration-calculator\/"/s);
+  assert.match(home,/<div class="hero-actions">.*?href="\/time-duration-calculator\/">Calculate time duration<\/a>/s);
+  const interval=await fs.readFile(new URL('../dist/time-duration-calculator/index.html',import.meta.url),'utf8');
+  assert.equal(interval.match(/<title>(.*?)<\/title>/)[1],'Time Duration Calculator — Hours Between Two Times');
+  assert(interval.includes('8 hours 30 minutes (8.5 hours)'));
+  assert(interval.includes('End time is on the next day'));
+  const years=await fs.readFile(new URL('../dist/years-ago-calculator/index.html',import.meta.url),'utf8');
+  assert(!years.match(/<meta name="description" content="([^"]+)"/)[1].includes('2018'));
+});
+
+test('duration related links prioritize nearby amounts in the same unit',async()=>{
+  for(const page of originalPages.filter(p=>/^\/how-long-is\/\d+-(seconds|minutes|hours|days|weeks|months)\/$/.test(p.route))){
+    const [,amount,unit]=page.route.match(/\/(\d+)-(\w+)\/$/);
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    const related=html.match(/<section class="related">(.*?)<\/section>/s)[1];
+    const links=[...related.matchAll(/class="directory-link" href="([^"]+)"/g)].map(m=>m[1]);
+    const same=originalPages.filter(p=>p.route!==page.route&&new RegExp(`^/how-long-is/\\d+-${unit}/$`).test(p.route)).sort((a,b)=>Math.abs(Number(a.route.match(/\/(\d+)-/)[1])-Number(amount))-Math.abs(Number(b.route.match(/\/(\d+)-/)[1])-Number(amount))||a.route.localeCompare(b.route)).slice(0,8);
+    assert.deepEqual(links.slice(0,same.length),same.map(p=>p.route),page.route);
+    assert(!html.includes('Adding 72 elapsed hours'),page.route);
+  }
+});
+
 test('domain migration consistently emits the configured origin, site identity and public contact address',async()=>{
   assert.equal(config.url,'https://timedurationcalculator.cc');
   assert.equal(config.contactEmail,'contact@timedurationcalculator.cc');
