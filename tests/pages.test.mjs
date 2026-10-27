@@ -7,6 +7,31 @@ const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 
+test('general hubs explain their broad task and specialized tools offer relevant destinations',async()=>{
+  const years=await fs.readFile(new URL('../dist/years-ago-calculator/index.html',import.meta.url),'utf8');
+  assert(years.includes('<h2>How to calculate years ago</h2>'));
+  assert(!years.includes('<h2>How long ago was 2018?</h2>'));
+  assert(years.includes('1,827 calendar days'));
+  const year=await fs.readFile(new URL('../dist/how-long-ago-was/2018/index.html',import.meta.url),'utf8');
+  assert(year.includes('<h2>How long ago was 2018?</h2>'));
+  const converter=await fs.readFile(new URL('../dist/time-duration-converter/index.html',import.meta.url),'utf8');
+  for(const text of ['Choose the right duration conversion','Decimal hours and compound durations','Months and years need a counting method'])assert(converter.includes(text),text);
+  for(const page of extraPages){
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    const related=html.match(/<section class="related">(.*?)<\/section>/s)[1];
+    const destinations=[...related.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
+    assert.equal(destinations.length,3,page.route);
+    assert.equal(new Set(destinations).size,3,page.route);
+    assert(!destinations.includes(page.route),page.route);
+  }
+  for(const route of ['1-30','3-30','3','4']){
+    const html=await fs.readFile(new URL(`../dist/how-long-until/${route}/index.html`,import.meta.url),'utf8');
+    assert(!html.includes('AM and PM Countdowns Live Countdown'));
+    assert.match(html,/<title>How Long Until .*?Live AM and PM Countdowns/);
+    assert(html.includes('id="am-result"')&&html.includes('id="pm-result"'));
+  }
+});
+
 test('search entry and worked examples are available before JavaScript',async()=>{
   const home=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8');
   assert.match(home,/<nav id="main-nav"[^>]*>.*?href="\/time-duration-calculator\/"/s);
