@@ -18,3 +18,7 @@ The owner approved implementation of the production SEO audit. Preserve all 77 r
 - Browser: 390px homepage core action visible around y=279px. 320px interval page has no horizontal document overflow; subtracting 30 minutes gives 8h; excessive break clears the result and disables copying. 768px navigation checked and corrected to keep wrapped links inside the header.
 - Search Console indexing, CrUX and Lighthouse: UNVERIFIED. No claim about rankings or measured Core Web Vitals.
 - Accepted historical production baseline retained. Post-publication results recorded separately after the live release is confirmed.
+
+## Production verification
+
+Cloudflare Pages and GitHub checks succeeded for the release. The live 77-page crawl has no failures, canonical/Sitemap regressions or orphan pages. Route sets and keyword hashes match the pre-release crawl. Every page now receives links from at least two distinct pages; all 77 titles and descriptions are unique. At 390px the live homepage action appears around y=279px without document overflow. Clicking it opens the core tool with 8h 30m 0s and visible static examples. A final copy edit applies singular/plural units to minute/second worked examples; 41 tests passed again. Search Console and measured Core Web Vitals remain unverified.
