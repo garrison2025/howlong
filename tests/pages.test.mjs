@@ -2,10 +2,40 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { extraPages } from '../scripts/tools-markup.mjs';
+import { clockInterval, durationText, parseDuration } from '../dist/assets/tools-core.js';
 const originalPages=JSON.parse(await fs.readFile(new URL('../data/pages.json',import.meta.url),'utf8'));
 const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
+
+test('initial tool answers match the actual default inputs without running browser JavaScript',async()=>{
+  for(const [route,calculate]of [
+    ['/time-duration-calculator/',values=>durationText(clockInterval(values('interval-start'),values('interval-end'),false))],
+    ['/time-calculator/',values=>durationText(parseDuration(values('arithmetic-a'))+parseDuration(values('arithmetic-b')))]
+  ]){
+    const html=await fs.readFile(new URL(`../dist${route}index.html`,import.meta.url),'utf8');
+    const values=id=>html.match(new RegExp(`<input[^>]*id="${id}"[^>]*value="([^"]+)"`))?.[1];
+    const answer=calculate(values);
+    assert.equal(html.match(/id="tool-result"[^>]*>([^<]+)/)?.[1],answer);
+    assert(html.match(/id="result-summary"[^>]*>([^<]+)/)?.[1].includes(answer));
+    assert.match(html,/<tbody id="tool-details"><tr>/);
+  }
+  const event=await fs.readFile(new URL('../dist/countdown-to-date/index.html',import.meta.url),'utf8');
+  assert.match(event,/id="tool-result"[^>]*>Choose your inputs/);
+});
+
+test('sitemap lastmod uses only explicitly recorded content dates, not the build date',async()=>{
+  const updates=JSON.parse(await fs.readFile(new URL('../data/page-updates.json',import.meta.url),'utf8'));
+  const xml=await fs.readFile(new URL('../dist/sitemap.xml',import.meta.url),'utf8');
+  let dated=0;
+  for(const [,location,date]of xml.matchAll(/<url><loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?<\/url>/g)){
+    const route=new URL(location).pathname;
+    assert.equal(date,updates[route]);
+    if(date){assert.match(date,/^\d{4}-\d{2}-\d{2}$/);dated++;}
+  }
+  assert.equal(dated,Object.keys(updates).length);
+  assert.equal(dated,2);
+});
 
 test('answer conditions and citation section links remain visible and resolve on their page',async()=>{
   for(const page of pages){

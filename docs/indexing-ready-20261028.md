@@ -1,0 +1,11 @@
+# Indexing preparation — 2026-10-28
+
+Owner approved initial-HTML default answers and truthful optional sitemap dates. This release does not access Search Console, request indexing, change crawler/security policies or claim improved indexing/rankings.
+
+The time duration calculator now emits its actual default clock interval (09:00–17:30, same day, no break) as 8h 30m 0s in initial HTML. The time calculator emits its default 1h 45m + 50m as 2h 35m 0s. Captions, assumptions, calculation detail rows and accessible summaries are also present before browser JavaScript. The builder uses the same clock/duration calculation functions as the browser and derives answers from the same constants as the input markup. Existing browser updates, saved settings, validation and calculation rules remain intact. Date-, device-clock- and time-zone-dependent tools retain their existing browser calculation instead of publishing fabricated current results.
+
+Sitemap lastmod dates are read from data/page-updates.json. Only these two pages have recorded content dates (2026-10-28); other pages omit lastmod. Build time, deploy time and countdown ticks never generate modification dates. Record a new date only when the corresponding page's significant content actually changes, including meaningful template/calculation changes. Do not refresh the registry for deployments alone. The builder rejects unknown routes and invalid calendar dates.
+
+Validation: TypeScript PASS; 47 tests PASS, including default-answer/input consistency without browser JavaScript, explicit sitemap date mapping, all 77 routes and 83 original + 17 supplemental keyword mappings. Local browser: default interval 8h 30m, deducting a 30-minute break gives 8h, excessive break disables copying, correcting it restores the result; default duration sum 2h 35m, changing 50m to 15m produces 2h. Mobile 390px has no horizontal document overflow; viewport restored. No runtime dependency or script/style changes.
+
+Post-publication HTML, sitemap and crawl evidence is saved separately under outputs/indexing-ready-20261028. The historical accepted baseline is not replaced. Search Console, actual Google indexing, Lighthouse and real-user Core Web Vitals are not verified by this release.

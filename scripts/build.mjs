@@ -2,11 +2,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { FIXED_UNITS, formatNumber } from '../dist/assets/core.js';
+import { FIXED_UNITS, formatNumber, parseDate } from '../dist/assets/core.js';
 import { extraPages, extraTool, toolLinks, savedMarkup } from './tools-markup.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const data=[...JSON.parse(await fs.readFile(path.join(root,'data/pages.json'),'utf8')),...extraPages];
+const pageUpdates=JSON.parse(await fs.readFile(path.join(root,'data/page-updates.json'),'utf8'));
+for(const [route,date]of Object.entries(pageUpdates)){
+  if(!data.some(page=>page.route===route))throw new Error(`Unknown updated page: ${route}`);
+  parseDate(date);
+}
 const keywords=JSON.parse(await fs.readFile(path.join(root,'data/keywords.json'),'utf8'));
 const config=JSON.parse(await fs.readFile(path.join(root,'site.config.json'),'utf8'));
 const origin=process.env.SITE_URL||config.url||process.env.CF_PAGES_URL||'http://localhost:4173';
@@ -231,7 +236,7 @@ for(const item of data){
 await fs.copyFile(path.join(root,'src/styles.css'),path.join(dist,'assets/styles.css'));
 await fs.writeFile(path.join(dist,'favicon.svg'),'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="#203b35"/><circle cx="32" cy="32" r="20" fill="none" stroke="#d6e8ad" stroke-width="3"/><path d="M32 19v14l10 6" fill="none" stroke="#d6e8ad" stroke-width="3" stroke-linecap="round"/></svg>');
 await fs.writeFile(path.join(dist,'robots.txt'),publicBuild?`User-agent: *\nAllow: /\nSitemap: ${siteURL}/sitemap.xml\n`:'User-agent: *\nDisallow: /\n');
-await fs.writeFile(path.join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${data.map(p=>`<url><loc>${siteURL}${p.route}</loc></url>`).join('')}</urlset>`);
+await fs.writeFile(path.join(dist,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${data.map(p=>`<url><loc>${siteURL}${p.route}</loc>${pageUpdates[p.route]?`<lastmod>${pageUpdates[p.route]}</lastmod>`:''}</url>`).join('')}</urlset>`);
 await fs.writeFile(path.join(dist,'404.html'),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Page not found | ${esc(config.name)}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/styles.css"></head><body>${header('')}<main class="container error-page"><span class="eyebrow">404 · PAGE NOT FOUND</span><h1>Let’s get you back<br>to the right time.</h1><p>This address doesn’t match one of our tools.</p>${link('/','Browse all calculators','button')}</main>${footer()}</body></html>`);
 await fs.writeFile(path.join(dist,'_headers'),`/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'\n/assets/*\n  Cache-Control: public, max-age=3600\n`);
 await fs.writeFile(path.join(dist,'_redirects'),'/how-long-till/3-pm/ /how-long-until/3-pm/ 301\n/how-long-until/3pm/ /how-long-until/3-pm/ 301\n');
