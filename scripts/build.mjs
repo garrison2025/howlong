@@ -73,11 +73,11 @@ function breadcrumbItems(item,p){
 function calculationSources(p){
   const refs=[];
   if(['clock','ambiguous','holiday','interval','event','zones'].includes(p.type))refs.push('<a href="https://www.iana.org/time-zones">IANA time-zone database</a> (time-zone rules are supplied by your browser)');
-  if(p.type==='holiday'&&p.holiday==='thanksgiving')refs.push('<a href="https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/">US Office of Personnel Management</a> (US Thanksgiving dates)');
+  if(p.type==='business'||p.type==='holiday'&&p.holiday==='thanksgiving')refs.push('<a href="https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/">US Office of Personnel Management</a> (US federal holiday dates and observances; company, state and local closures may differ)');
   if(p.type==='years'||p.type==='definition'||p.type==='dates'||p.unit==='months')refs.push('<a href="https://aa.usno.navy.mil/faq/calendars">US Naval Observatory calendar guide</a> (Gregorian leap-year rules)');
   if(['duration','converter','arithmetic'].includes(p.type)&&p.unit!=='months')refs.push('<a href="https://www.bipm.org/en/publications/si-brochure">BIPM SI Brochure</a> (time-unit reference)');
   if(!refs.length)return '';
-  return `<aside class="source-note" aria-label="Calculation references"><h2>Calculation references</h2><p>${refs.join('; ')}. Month-end clamping and countdown target conventions are ${esc(config.name)}’s stated calculation choices. References checked October 26, 2026.</p></aside>`;
+  return `<aside id="references" class="source-note" aria-label="Calculation references"><h2>Calculation references</h2><p>${refs.join('; ')}.</p><p>These sources support the facts identified above; they do not certify this calculator. Month-end clamping, endpoint inclusion and countdown occurrence choices are ${esc(config.name)}’s stated product rules, explained in the calculation method. References checked October 26, 2026.</p></aside>`;
 }
 
 function header(active){return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="header-inner"><a href="/" class="brand" aria-label="${esc(config.name)} home"><span class="brand-symbol">${icon('clock')}</span><span class="brand-name">${esc(config.name).replace(" Calculator","<span>Calculator</span>")}</span></a><nav id="main-nav" aria-label="Main navigation">${[['/time-duration-calculator/','Duration calculator','interval'],['/how-long-until/','Countdowns','clock'],['/time-duration-converter/','Time converter','duration'],['/business-days-calculator/','Business days','business'],['/date-calculator/','Date calculator','dates']].map(([url,text,type])=>`<a href="${url}"${active===type?' aria-current="page"':''}>${text}</a>`).join('')}</nav><div class="header-actions"><button id="open-search" type="button" class="icon-button" aria-label="Search all tools">${icon('search')}</button><button id="theme-toggle" type="button" class="icon-button" aria-label="Toggle dark theme" aria-pressed="false">${icon('sun')}</button><button id="menu-toggle" type="button" class="icon-button menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">${icon('menu')}</button></div></div></header>`;}
@@ -179,7 +179,9 @@ for(const item of data){
   else{
     const category=['clock','ambiguous'].includes(p.type)?'COUNTDOWN TO A TIME':p.type==='holiday'?'HOLIDAY COUNTDOWN':p.type==='duration'||p.type==='converter'?'TIME DURATION CONVERTER':p.type==='business'?'BUSINESS DAYS & DATES':p.type==='years'?'DATE & YEAR CALCULATOR':p.type==='definition'?'TIME, EXPLAINED':esc(config.name.toUpperCase());
     main=`<nav class="breadcrumb" aria-label="Breadcrumb">${breadcrumbs.map((b,i)=>`${i?'<span aria-hidden="true">/</span>':''}${i===breadcrumbs.length-1?`<span aria-current="page">${esc(b.name)}</span>`:link(b.route,b.name)}`).join('')}</nav><section class="page-intro"><span class="eyebrow">${category}</span><h1>${esc(item.h1)}</h1></section>`;
-    if(item.tool)main+=extraTool(p,{label,select,dateInput,copyButton,resultSummary,status});
+    const rule=['duration','converter'].includes(p.type)?p.unit==='months'?'Calendar months and years follow the selected start date; they are not fixed numbers of days.':'Fixed-unit conversions use 24-hour days and 7-day weeks. Rounded decimal values are labeled approximately; calendar dates can span different elapsed hours.':p.type==='business'?'Working-day results depend on the start date, endpoint inclusion, weekend schedule and selected holiday exclusions. Public holidays are skipped only when explicitly selected or entered.':p.type==='years'?'Time ago depends on the exact date and reference date. A whole year is a range, not one day; the reference date initially comes from your device and can be changed.':['clock','ambiguous'].includes(p.type)?'The remaining time depends on the current date, clock time, selected time zone and Today / Tomorrow / Next occurrence rule. The live result is calculated on your device; it is not a fixed answer for every visitor.':'';
+    if(rule)main+=`<p id="counting-rules" class="field-help">${rule}</p>`;
+    if(item.tool)main+=extraTool(p,{label,select,dateInput,copyButton,resultSummary,status}).replace('<h2>How this calculator works</h2>','<h2 id="calculation-method">How this calculator works</h2>').replace('<h2>Time duration examples</h2>','<h2 id="worked-examples">Time duration examples</h2>');
     else if(['clock','ambiguous','holiday'].includes(p.type))main+=clockTool(p);
     else if(['duration','converter'].includes(p.type))main+=durationTool(p);
     else if(p.type==='business')main+=businessTool(p,item.route);
@@ -188,8 +190,13 @@ for(const item of data){
     else if(p.type==='holiday-hub')main+=`<p class="lede">Live countdowns to clearly defined holiday dates, in your selected time zone.</p><div class="link-grid">${data.filter(x=>typeOf(x).type==='holiday').map(x=>link(x.route,x.h1,'directory-link')).join('')}</div>`;
     else main+=legalContent(item.route);
     if(!['legal','holiday-hub','definition'].includes(p.type))main+=savedMarkup;
-    main+=explanation(p,item.route);
+    let method=explanation(p,item.route).replace('<section ','<section id="calculation-method" ');
+    if(['clock','ambiguous'].includes(p.type))method+=`<section class="explanation"><h2 id="worked-examples">A countdown example with explicit assumptions</h2><p>If the current time is 14:00 UTC and the target is 15:00 UTC on the same date, the remaining interval is 1 hour. This is a hypothetical example, not your live remaining time. Use the selected time zone and target rule above for your actual result.</p></section>`;
+    if(p.type==='years')method+=`<section class="explanation"><h2 id="worked-examples">A fixed reference-date example</h2><p>Comparing January 1, ${p.year} with January 1, ${p.year+1} gives 1 calendar year. Here the reference date is explicitly January 1, ${p.year+1}, not today. To compare the whole year ${p.year}, use both its January 1 and December 31 endpoints.</p></section>`;
+    main+=method;
     main+=calculationSources(p);
+    const sections=[['counting-rules','Counting rules'],['calculation-method','Calculation method'],['worked-examples','Worked examples'],['references','References']].filter(([id])=>main.includes(`id="${id}"`));
+    if(sections.length)main=main.replace('</section>',`</section><nav class="section-links" aria-label="On this page">${sections.map(([id,title])=>link('#'+id,title)).join('')}</nav>`);
     if(!['legal','holiday-hub','clock','ambiguous','holiday'].includes(p.type))main+='<noscript><p class="notice">Interactive calculations need JavaScript. The fixed answers, calculation rules and tool links remain available.</p></noscript>';
     if(item.route==='/how-long-until/')main+=directory(groups()[0]);
     else if(item.route==='/time-duration-converter/')main+=directory(groups()[1]);

@@ -7,6 +7,26 @@ const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 
+test('answer conditions and citation section links remain visible and resolve on their page',async()=>{
+  for(const page of pages){
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    const ids=new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
+    for(const link of html.matchAll(/href="#([^"]+)"/g))assert(ids.has(link[1]),`${page.route}#${link[1]}`);
+  }
+  const fixed=await fs.readFile(new URL('../dist/how-long-is/100-hours/index.html',import.meta.url),'utf8');
+  assert(fixed.includes('id="counting-rules"'));
+  assert(fixed.includes('Fixed-unit conversions use 24-hour days'));
+  assert(fixed.includes('href="#calculation-method"'));
+  const clock=await fs.readFile(new URL('../dist/how-long-until/3-pm/index.html',import.meta.url),'utf8');
+  assert(clock.includes('hypothetical example, not your live remaining time'));
+  assert(clock.includes('14:00 UTC'));
+  const year=await fs.readFile(new URL('../dist/how-long-ago-was/2018/index.html',import.meta.url),'utf8');
+  assert(year.includes('reference date is explicitly January 1, 2019, not today'));
+  const business=await fs.readFile(new URL('../dist/business-days-calculator/index.html',import.meta.url),'utf8');
+  assert(business.includes('id="references"'));
+  assert(business.includes('they do not certify this calculator'));
+});
+
 test('preset answers use exact compound units and task descriptions match their tools',async()=>{
   for(const [route,answer]of [['100-hours','100 hours = 4 days 4 hours.'],['90-days','90 days = 12 weeks 6 days.'],['90-minutes','90 minutes = 1 hour 30 minutes.'],['72-hours','72 hours = 3 days.']]){
     const html=await fs.readFile(new URL(`../dist/how-long-is/${route}/index.html`,import.meta.url),'utf8');
