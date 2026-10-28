@@ -2,7 +2,7 @@ import { addDays, addMonths, businessDays, calendarEnd, dateDifference, dateEpoc
 import { animateFeedback, cancelFeedback, motionTiming } from './motion.js';
 import { mountDial } from './dial.js';
 import { mountTools, soundControls } from './tools.js';
-import { businessBetween, eventHref, federalHolidays, normalizeSearch, parseDuration } from './tools-core.js';
+import { businessBetween, eventHref, federalHolidays, matchesSearch, normalizeSearch, parseDuration } from './tools-core.js';
 
 type PageConfig = { type: string; hour?: number; minute?: number; amount?: number; unit?: Unit; year?: number; holiday?: 'halloween'|'thanksgiving'; businessMin?: number; businessMax?: number; definition?: 'fortnight'|'century' };
 const page = JSON.parse(document.getElementById('page-config')?.textContent ?? '{}') as PageConfig;
@@ -85,8 +85,8 @@ document.getElementById('menu-toggle')?.addEventListener('click',()=>{const open
 const searchDialog=document.getElementById('search-dialog') as HTMLDialogElement|null;
 const searchIndex=JSON.parse(document.getElementById('search-index')?.textContent??'[]') as {route:string;label:string;terms:string}[];
 function searchTools(): void {
-  const term=normalizeSearch(input('tool-search').value),tokens=term.split(' ').filter(Boolean);
-  const matches=searchIndex.filter(p=>tokens.every(token=>normalizeSearch(p.label+' '+p.terms).split(' ').includes(token))).sort((a,b)=>Number(normalizeSearch(b.label).includes(term))-Number(normalizeSearch(a.label).includes(term))).slice(0,12);
+  const term=normalizeSearch(input('tool-search').value);
+  const matches=searchIndex.filter(p=>matchesSearch(p,term)).sort((a,b)=>Number(normalizeSearch(b.label).includes(term))-Number(normalizeSearch(a.label).includes(term))).slice(0,12);
   const list=el('search-results');list.replaceChildren();
   for(const p of matches){const li=document.createElement('li'),a=document.createElement('a');a.href=p.route;a.textContent=p.label;li.append(a);list.append(li);}
   el('search-count').textContent=matches.length?`${matches.length} tool${matches.length===1?'':'s'} shown`:'No matching tools. Try a time such as 3 PM, hours, or business days.';
@@ -340,3 +340,12 @@ if(page.type==='definition'){
 document.getElementById('copy-report')?.addEventListener('click',()=>void copyText(`Time Duration Calculator feedback\nPage: ${location.origin}${location.pathname}\nTime zone: ${deviceZone}\nObserved result:\nExpected result:\nSteps to reproduce:\n`));
 
 mountTools(page.type,{protect,message,copyText,tableRows});
+
+const resultPanel=document.getElementById('result-panel');
+if(resultPanel&&document.querySelector('.control-panel')&&'IntersectionObserver' in window){
+  const jump=document.createElement('button');jump.type='button';jump.className='button result-jump';jump.textContent='View calculation result';jump.hidden=true;
+  resultPanel.tabIndex=-1;
+  jump.addEventListener('click',()=>{resultPanel.scrollIntoView({block:'start'});resultPanel.focus({preventScroll:true});});
+  document.body.append(jump);document.body.classList.add('has-result-jump');
+  new IntersectionObserver(entries=>{jump.hidden=entries[0]!.isIntersecting||entries[0]!.boundingClientRect.bottom>0;}).observe(resultPanel.querySelector('.primary-value,.digits')??resultPanel);
+}

@@ -26,3 +26,6 @@
 .tool-shortcuts .directory-link{align-items:flex-start}.tool-shortcuts .directory-link small{display:block;font-size:13px;line-height:1.6;margin-top:5px;color:var(--muted)}
 
 .section-links{display:flex;flex-wrap:wrap;gap:4px 18px;margin-bottom:16px;font-size:14px}.section-links a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline;text-underline-offset:3px;color:var(--green)}
+
+.result-jump{display:none}.date-examples button{margin:4px 12px 12px 0}
+@media(max-width:760px){.has-result-jump{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}.result-jump:not([hidden]){display:flex;position:fixed;right:20px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;min-height:44px;max-width:calc(100% - 40px);box-shadow:0 2px 8px #0002}#result-panel{scroll-margin-top:16px}}

@@ -70,9 +70,9 @@ export function mountTools(type:string,h:Helpers):void {
       }else if(type==='dates'){
         const shift=value('date-mode')==='shift';show('date-difference-fields',!shift);show('date-shift-fields',shift);
         const start=parseDate(value('date-start'));
-        if(shift){const end=dateShift(value('date-start'),number('date-amount'),value('date-unit') as Unit);setResult(prettyDate(end),`${value('date-amount')} calendar ${value('date-unit')} from ${dateISO(start)}`,[['Result date',dateISO(end)],['Calendar day change',String((dateEpoch(end)-dateEpoch(start))/86400000)]],'Months clamp to month end when needed.');}
+        if(shift){const amount=number('date-amount'),unit=value('date-unit'),end=dateShift(value('date-start'),amount,unit as Unit);setResult(prettyDate(end),`${amount} calendar ${Math.abs(amount)===1?unit.slice(0,-1):unit} from ${dateISO(start)}`,[['Result date',dateISO(end)],['Calendar day change',String((dateEpoch(end)-dateEpoch(start))/86400000)]],'Months clamp to month end when needed.');}
         else{const end=parseDate(value('date-end')),distance=Math.round((dateEpoch(end)-dateEpoch(start))/86400000),count=Math.max(0,Math.abs(distance)+1-Number(!checked('date-include-start'))-Number(!checked('date-include-end')))*(distance<0?-1:1),parts=dateDifference(start,end);
-          setResult(`${formatNumber(count)} calendar days`,`${dateISO(start)} to ${dateISO(end)}`,[['Calendar difference (unsigned)',`${parts.years} years, ${parts.months} months, ${parts.days} days`],['Start date included',checked('date-include-start')?'Yes':'No'],['End date included',checked('date-include-end')?'Yes':'No']],'The signed day count applies the endpoint options; the calendar difference is shown separately.');}
+          setResult(`${formatNumber(count)} calendar day${Math.abs(count)===1?'':'s'}`,`${dateISO(start)} to ${dateISO(end)}`,[['Calendar difference (unsigned)',`${parts.years} year${parts.years===1?'':'s'}, ${parts.months} month${parts.months===1?'':'s'}, ${parts.days} day${parts.days===1?'':'s'}`],['Start date included',checked('date-include-start')?'Yes':'No'],['End date included',checked('date-include-end')?'Yes':'No']],'The signed day count applies the endpoint options; the calendar difference is shown separately.');}
       }else if(type==='arithmetic'){
         const clock=value('arithmetic-mode')==='clock';show('arithmetic-clock-field',clock);show('arithmetic-duration-field',!clock);
         const sign=value('arithmetic-operation')==='subtract'?-1:1,delta=parseDuration(value('arithmetic-b'))*sign;
@@ -108,7 +108,13 @@ export function mountTools(type:string,h:Helpers):void {
     panel?.addEventListener('input',update);
     panel?.addEventListener('change',update);
     if(type==='interval')document.getElementById('interval-swap')!.addEventListener('click',()=>{for(const [a,b]of [['interval-start','interval-end'],['interval-start-date','interval-end-date'],['interval-start-occurrence','interval-end-occurrence']]){const original=value(a!);field(a!).value=value(b!);field(b!).value=original;}update();});
-    if(type==='dates')document.getElementById('date-swap')!.addEventListener('click',()=>{const original=value('date-start');field('date-start').value=value('date-end');field('date-end').value=original;update();});
+    if(type==='dates'){
+      document.getElementById('date-swap')!.addEventListener('click',()=>{const original=value('date-start');field('date-start').value=value('date-end');field('date-end').value=original;update();});
+      document.querySelectorAll<HTMLButtonElement>('[data-date-example]').forEach(button=>{button.hidden=false;button.addEventListener('click',()=>{
+        restore(button.dataset.dateExample==='month-end'?{'date-mode':'shift','date-start':'2024-01-31','date-amount':'1','date-unit':'months'}:{'date-mode':'difference','date-start':'2026-10-28','date-end':'2026-10-23','date-include-start':true,'date-include-end':false});
+        update();document.getElementById('result-panel')!.scrollIntoView({block:'start'});document.getElementById('date-mode')!.focus({preventScroll:true});
+      });});
+    }
     if(type==='zones')document.getElementById('zone-swap')!.addEventListener('click',()=>h.protect(()=>{const source=value('zone-source'),target=value('zone-target'),epoch=dateTime(value('zone-date'),value('zone-time'),source,value('zone-occurrence')),p=zonedParts(epoch,target);field('zone-source').value=target;field('zone-target').value=source;field('zone-date').value=dateISO(p);field('zone-time').value=timeText(p);field('zone-occurrence').value=dateTime(dateISO(p),timeText(p),target,'earlier')===epoch?'earlier':'later';update();}));
     update();
     if(type==='event'){

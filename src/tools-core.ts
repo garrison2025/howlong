@@ -104,7 +104,15 @@ export function calendarFile(epoch:number,name:string,stamp:number):string {
 }
 
 export function normalizeSearch(value:string):string {
-  return value.toLowerCase().replace(/(\d)(am|pm)\b/g,'$1 $2').replace(/\bmins?\b/g,'minutes').replace(/\bhrs?\b/g,'hours').replace(/\bsecs?\b/g,'seconds').replace(/[^a-z0-9]+/g,' ').trim();
+  return value.toLowerCase().replace(/(\d)(am|pm)\b/g,'$1 $2').replace(/\bmins?\b/g,'minutes').replace(/\bhrs?\b/g,'hours').replace(/\bsecs?\b/g,'seconds').replace(/\b(second|minute|hour|day|week|month|year)\b/g,'$1s').replace(/[^a-z0-9]+/g,' ').trim();
+}
+
+export function matchesSearch(item:{label:string;terms:string},query:string):boolean {
+  const term=normalizeSearch(query),label=normalizeSearch(item.label),words=normalizeSearch(item.label+' '+item.terms).split(' ');
+  if(!term.split(' ').filter(Boolean).every(token=>words.includes(token)))return false;
+  const duration=/\b\d+ (?:seconds|minutes|hours|days|weeks|months|years)\b/;
+  const requested=term.match(duration)?.[0],primary=label.match(duration)?.[0];
+  return !requested||!primary||requested===primary;
 }
 
 export function dateShift(start:string,amount:number,unit:Unit):CivilDate { return calendarEnd(parseDate(start),amount,unit); }

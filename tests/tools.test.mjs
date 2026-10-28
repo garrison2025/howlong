@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseDate, dateISO } from '../dist/assets/core.js';
-import { parseClock, parseDuration, durationText, clockInterval, dateTime, businessBetween, federalHolidays, annualTarget, eventHref, calendarFile, normalizeSearch, dateShift } from '../dist/assets/tools-core.js';
+import { parseClock, parseDuration, durationText, clockInterval, dateTime, businessBetween, federalHolidays, annualTarget, eventHref, calendarFile, normalizeSearch, matchesSearch, dateShift } from '../dist/assets/tools-core.js';
 
 test('compound durations accept large hours, decimals and signed values but reject malformed inputs',()=>{
   assert.equal(parseDuration('27:15:30'),98130);
@@ -63,4 +63,15 @@ test('search normalizes common duration abbreviations and clock spelling',()=>{
   assert.equal(normalizeSearch('90 min'),'90 minutes');
   assert.equal(normalizeSearch('3pm'),'3 pm');
   assert.equal(normalizeSearch('2 hrs 30 secs'),'2 hours 30 seconds');
+});
+
+test('duration searches respect the primary amount and unit despite cross-unit keyword aliases',()=>{
+  const minutes={label:'How Long Is 90 Minutes?',terms:'90 minutes in seconds'},seconds={label:'How Long Is 90 Seconds?',terms:'90 seconds in minutes'};
+  assert(matchesSearch(minutes,'90 mins'));
+  assert(!matchesSearch(seconds,'90 mins'));
+  assert(matchesSearch(seconds,'90 sec'));
+  assert(!matchesSearch(minutes,'90 seconds'));
+  assert(matchesSearch(minutes,'90 minute'));
+  assert(matchesSearch({label:'Time Duration Calculator',terms:'hours between times'},'hours between times'));
+  assert(matchesSearch(minutes,''));
 });
