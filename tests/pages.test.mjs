@@ -7,6 +7,27 @@ const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 
+test('preset answers use exact compound units and task descriptions match their tools',async()=>{
+  for(const [route,answer]of [['100-hours','100 hours = 4 days 4 hours.'],['90-days','90 days = 12 weeks 6 days.'],['90-minutes','90 minutes = 1 hour 30 minutes.'],['72-hours','72 hours = 3 days.']]){
+    const html=await fs.readFile(new URL(`../dist/how-long-is/${route}/index.html`,import.meta.url),'utf8');
+    const lead=html.match(/id="conversion-lead"[^>]*>(.*?)<\/p>/s)[1];
+    assert(lead.includes(answer),route);
+    assert(html.match(/name="description" content="([^"]*)/)[1].includes(answer),route);
+    if(route==='100-hours'||route==='90-days')assert(lead.includes('approximately'),route);
+    if(route==='90-minutes')assert(!lead.includes('approximately'),route);
+  }
+  const hub=await fs.readFile(new URL('../dist/business-days-calculator/index.html',import.meta.url),'utf8');
+  assert(hub.includes('Choose a working-day task'));
+  assert(hub.includes('count working days between two dates'));
+  const leaf=await fs.readFile(new URL('../dist/how-long-is/3-business-days/index.html',import.meta.url),'utf8');
+  assert(leaf.includes('3 business days means 3 working days'));
+  assert(!leaf.includes('Choose a working-day task'));
+  for(const route of ['/business-days-calculator/','/time-duration-converter/','/holiday-countdown/','/how-long-is/3-business-days/','/how-long-is/5-business-days/','/how-long-is/3-5-business-days/','/how-long-is/a-fortnight/','/how-long-is/a-century/','/how-long-until/halloween/','/how-long-until/thanksgiving/']){
+    const html=await fs.readFile(new URL(`../dist${route}index.html`,import.meta.url),'utf8');
+    assert(!html.match(/name="description" content="([^"]*)/)[1].includes('Free, precise countdowns'),route);
+  }
+});
+
 test('general hubs explain their broad task and specialized tools offer relevant destinations',async()=>{
   const years=await fs.readFile(new URL('../dist/years-ago-calculator/index.html',import.meta.url),'utf8');
   assert(years.includes('<h2>How to calculate years ago</h2>'));
