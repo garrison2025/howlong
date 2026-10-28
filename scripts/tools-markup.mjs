@@ -6,7 +6,10 @@ export const extraPages=[
   {route:'/time-zone-converter/',h1:'Time Zone Converter',title:'Time Zone Converter: Convert Dates and Times Between Zones',description:'Convert a dated local time between IANA time zones. See the result date, UTC offsets, day change and daylight-saving occurrence choices.',tool:'zones'},
 ];
 
-export function toolLinks(){return `<section class="tool-shortcuts" aria-label="More time calculators"><h2>More ways to calculate time</h2><div class="link-grid">${extraPages.map(p=>`<a class="directory-link" href="${p.route}">${p.h1}</a>`).join('')}</div></section>`;}
+export function toolLinks(){
+  const purposes={interval:'Measure the time between two moments.',event:'Count down to a date or event.',dates:'Compare dates or add calendar days.',arithmetic:'Add or subtract hours, minutes and seconds.',zones:'Convert a dated time between time zones.'};
+  return `<section class="tool-shortcuts" aria-label="More time calculators"><h2>More ways to calculate time</h2><div class="link-grid">${extraPages.map(p=>`<a class="directory-link" href="${p.route}"><span>${p.h1}<small>${purposes[p.tool]}</small></span></a>`).join('')}</div><p class="field-help">Converting a duration changes its unit; measuring an interval compares two endpoints. <a href="/time-duration-converter/">Use the duration converter for unit conversions.</a></p></section>`;
+}
 
 export const savedMarkup=`<details class="saved-calculations"><summary>Save, share &amp; recent calculations</summary><p>Save on this device, or copy settings into a link. Shared links contain your inputs; share only the details you intend.</p><div class="saved-actions"><label for="saved-name">Calculation name (optional)</label><input id="saved-name" maxlength="80" placeholder="e.g. My meeting"><button class="button secondary" type="button" id="save-calculation">Save on this device</button><button class="button secondary" type="button" id="share-calculation">Copy settings link</button><button class="quiet-button" type="button" id="clear-calculations">Clear saved calculations</button></div><p id="saved-status" role="status"></p><ul id="saved-list"></ul></details>`;
 

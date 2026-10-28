@@ -1,0 +1,7 @@
+# Tool purposes and reproducible checks — 2026-10-28
+
+Owner approved the preceding on-site recommendations and reported HowLong in the homepage wordmark. The actual open user tab contained the old document (including old title and hero actions); a fresh HTTP response already used Time Duration Calculator with max-age=0, must-revalidate. Reloading that same tab corrected its header, footer and title. No second brand migration or repository rename is needed.
+
+This release adds brief purpose descriptions to the five supplemental tool links, distinguishes duration conversion from interval measurement, and publishes reproducible accuracy checks on About for DST, month-end clamping and business-day inclusion. Existing runtime rules, field IDs, legal copy, all 77 routes and 83 original + 17 supplemental keyword mappings are preserved.
+
+Verification: TypeScript and 43 tests pass. Independently executed each documented example against the existing core: New York March 8–9, 2026 midnight is 23 elapsed hours; January 31 plus one month ends February 29 in 2024 and February 28 in 2025; Friday October 23, 2026 plus three working days ends October 28 excluding start or October 27 including start. Browser at 390px confirms five tool-purpose descriptions and all three About subsections, with no document overflow. Search Console remains deferred; no new lab measurement or ranking claim. Production crawl recorded separately after release, retaining the accepted historical baseline.
