@@ -28,3 +28,8 @@ PASS production verification, functional release `2cbc02883a98bacd8c418eb8c556cc
 Live asset verification on 2026-10-26: app.js SHA-256 `159abc99913902e698b98597f3b0d1253ba3daafe787b9cccc1e60b81c6a2373`, styles.css `cdee21129d5c17eb0ca14d2ee5d4cd6fc72a9effd416138bd9a04281fc1d7f02`, unchanged core.js `03ff247002143be585dd6a1d4c461e899ba5fc25f40c2cae3a9cd248ac1ab66b`; all equal local final build. Browser exercised 120 minutes → 2 hours and empty input → visible error + invalid field + disabled copy on the public site. Explicit alias redirect remains 301, slash normalization 308, missing route 404/noindex. No runtime dependency, analytics or new paid infrastructure was introduced.
 
 Performance lab: NOT RUN (PageSpeed public request failed to connect). GSC ownership, submitted/indexed counts, query/click/AI-search reports and CrUX field data: UNAVAILABLE, not passed. No international/hreflang applies. Training crawler policy unchanged; no special AI-only file added. Missing measurements are explicit limitations, not claims of full L2 certification.
+
+
+## 2026-10-29 existing-site quality maintenance
+
+See [quality review](docs/quality-review-20261029.md) for scope, confirmed navigation/cache repairs, 49 passing tests, fresh mobile Lighthouse baseline and viewport validation limits. Preserve historical evidence above.

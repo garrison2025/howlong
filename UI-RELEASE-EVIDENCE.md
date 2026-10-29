@@ -42,3 +42,8 @@ Scope: existing-site alignment with Website Starter Standard. Operate calculator
 Screenshots are in the delivery folder above this repo: `howlong-standard-after-mobile.png`, `howlong-standard-360.png`, `howlong-standard-390.png`, `howlong-standard-768.png`, `howlong-standard-1024.png`, `howlong-standard-1440.png`. They are real local browser captures, not generated mockups. Before capture can transiently scale when viewport override changes; final settled screenshots and DOM widths are authoritative for the sampled sizes.
 
 Known limitations: no physical touch-device, screen-reader, 200% text-zoom, reduced-motion emulation, Lighthouse/CrUX or full cross-browser certification. No unresolved observed P0/P1 issue in tested scope. This release record does not assert that every item in the upstream standard is measured or certified. Revert the functional release commit to roll back; keep subsequent changes scoped to actual findings.
+
+
+## 2026-10-29 existing-site quality maintenance
+
+See [quality review](docs/quality-review-20261029.md) for scope, confirmed navigation/cache repairs, 49 passing tests, fresh mobile Lighthouse baseline and viewport validation limits. Preserve historical evidence above.

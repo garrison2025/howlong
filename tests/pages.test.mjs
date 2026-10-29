@@ -8,6 +8,27 @@ const pages=[...originalPages,...extraPages];
 const config=JSON.parse(await fs.readFile(new URL('../site.config.json',import.meta.url),'utf8'));
 const keywords=JSON.parse(await fs.readFile(new URL('../data/keywords.json',import.meta.url),'utf8'));
 
+test('current-page navigation identifies only its actual destination',async()=>{
+  for(const page of pages){
+    const html=await fs.readFile(new URL(`../dist${page.route}index.html`,import.meta.url),'utf8');
+    const navigation=html.match(/<nav id="main-nav"[^>]*>(.*?)<\/nav>/s)[1];
+    const current=[...navigation.matchAll(/<a href="([^"]+)" aria-current="page"/g)].map(m=>m[1]);
+    assert(current.every(route=>route===page.route),`Misleading current page on ${page.route}: ${current}`);
+    assert.equal(current.length,navigation.includes(`href="${page.route}"`)?1:0);
+  }
+});
+
+test('long-lived assets are versioned on all pages including the error page',async()=>{
+  const home=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8'),version=home.match(/app\.js\?v=([a-f0-9]{12})/)[1];
+  for(const route of [...pages.map(p=>`${p.route}index.html`),'/404.html']){
+    const html=await fs.readFile(new URL(`../dist${route}`,import.meta.url),'utf8');
+    assert(html.includes(`/assets/styles.css?v=${version}"`),route);
+    for(const [,url]of html.matchAll(/(?:src|href)="(\/assets\/[^\"]+)"/g))assert(url.endsWith(`?v=${version}`),`${route}: ${url}`);
+  }
+  const headers=await fs.readFile(new URL('../dist/_headers',import.meta.url),'utf8');
+  assert.match(headers,/\/assets\/\*\n  Cache-Control: public, max-age=31536000, immutable/);
+});
+
 test('initial tool answers match the actual default inputs without running browser JavaScript',async()=>{
   for(const [route,calculate]of [
     ['/time-duration-calculator/',values=>durationText(clockInterval(values('interval-start'),values('interval-end'),false))],
